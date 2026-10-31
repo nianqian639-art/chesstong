@@ -53,7 +53,7 @@ npm run build
 ## 演示
 
 - 在线体验：<https://chesstong.top>
-- 仓库地址：待发布后补充
+- 仓库地址：<https://github.com/nianqian639-art/chesstong>（当前为私有仓库）
 
 ## 第三方组件
 
