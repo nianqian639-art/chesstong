@@ -1,0 +1,11 @@
+node_modules
+dist
+.env
+.env.*
+*.log
+logs/
+test/
+tests/
+__tests__/
+*.test.*
+*.spec.*

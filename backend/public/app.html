@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title data-i18n="appTitle">棋童 - 训练中心</title>
+  <link rel="stylesheet" href="/css/style.css?v=20261024-family" />
+</head>
+<body>
+
+<header class="header">
+  <div class="logo"><a href="/" style="color:inherit;text-decoration:none;">♜ <span data-i18n="brand">棋童</span></a></div>
+  <nav id="topNav">
+    <a href="#" data-nav="dashboard">🏠 <span data-i18n="dashboard">首页</span></a>
+    <a href="#" data-nav="learn">📚 <span data-i18n="learn">学习</span></a>
+    <a href="#" data-nav="practice">⚔ <span data-i18n="practice">做题</span></a>
+    <a href="#" data-nav="battle">♛ <span data-i18n="battle">AI对战</span></a>
+    <a href="#" data-nav="pvp">👥 <span data-i18n="pvp">对战</span></a>
+    <a href="#" data-nav="arena">🏟 <span data-i18n="arena">公开赛</span></a>
+    <a href="#" data-nav="rankings">🏆 <span data-i18n="rankings">排行</span></a>
+    <a href="#" data-nav="friends" id="navFriends">💬 <span data-i18n="friends">好友</span></a>
+    <a href="#" data-nav="classStudent" id="navClassStudent" style="display:none;">📖 <span data-i18n="class">班级</span></a>
+    <a href="#" data-nav="classTeacher" id="navClassTeacher" style="display:none;">🏫 <span data-i18n="manage">管理</span></a>
+    <a href="#" data-nav="parent" id="navParent" style="display:none;">👨‍👩‍👧 <span data-i18n="parent">家长</span></a>
+    <span id="langMount"></span>
+    <label for="interfaceFont" data-i18n="fontChoice">字体</label><select id="interfaceFont" onchange="setInterfaceFont(this.value)"><option value="default" data-i18n="fontDefault">默认字体</option><option value="brush" data-i18n="fontBrush">飘逸书法</option><option value="serif" data-i18n="fontSerif">经典衬线</option></select>
+    <button class="btn btn-ghost" onclick="showGuide()" style="font-size:12px;padding:4px 10px;" title="使用指南" data-i18n-title="guide">📖</button>
+    <span id="userInfo" style="color:var(--gold);margin-left:8px;font-weight:600;"></span>
+    <button class="btn btn-ghost" onclick="API.logout()" style="font-size:12px;padding:4px 10px;" data-i18n="logout">退出</button>
+  </nav>
+</header>
+
+<div class="container">
+  <!-- Dashboard -->
+  <div id="view-dashboard">
+    <div style="text-align:center;padding:30px 0 10px;color:#fff;">
+      <h1 id="greeting">欢迎回来</h1>
+      <p id="rankLine" style="color:var(--gold);font-size:15px;"></p>
+    </div>
+    <div id="rankCard"></div>
+    <div id="voiceSettings"></div>
+    <div id="dailyMissionCard" style="display:none;"></div>
+    <div id="parentTaskCards"></div>
+    <div class="dash-grid" id="dashGrid"></div>
+  </div>
+
+  <!-- Learning -->
+  <div id="view-learn" class="panel" style="display:none;">
+    <h2>📚 <span data-i18n="learningCenter">学习中心</span></h2><div class="dash-grid" id="learnSections"></div>
+    <div id="learnDetail" style="display:none;margin-top:16px;">
+      <div class="row"><button class="btn btn-ghost" onclick="backToLearn()" data-i18n="back">← 返回</button></div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;">
+        <div id="learnTopicList" class="list" style="width:200px;"></div>
+        <div style="flex:1;min-width:280px;">
+          <div id="learnContent" class="feed" style="min-height:200px;overflow:auto;"></div>
+          <div id="learnBoard" style="margin-top:10px;"></div>
+          <div id="learnTips" style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Practice -->
+  <div id="view-practice" class="panel" style="display:none;">
+    <h2>⚔ <span data-i18n="practiceCenter">题库训练</span></h2>
+    <div class="row"><button class="btn btn-primary" onclick="loadProblems()" data-i18n="practiceLoad">📥 载入题库</button><button class="btn btn-ghost" onclick="nextProblem()" data-i18n="nextProblem">下一题→</button><button class="btn btn-ghost" onclick="showHint()" data-i18n="hint">💡提示</button></div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;">
+      <div style="flex:1;min-width:300px;"><div id="practiceBoard" class="board-wrap"></div>
+        <div class="row" style="margin-top:8px;"><span style="font-size:12px;color:var(--muted);" data-i18n="practiceClick">👆 点击棋盘上的棋子，再点目标格走棋</span></div>
+        <div class="row"><input id="practiceAnswer" placeholder="或手动输入走法，如 e2e4" data-i18n-placeholder="practiceInput" style="flex:1;"><button class="btn btn-primary" onclick="submitPractice()" data-i18n="submit">提交</button></div></div>
+      <div style="min-width:240px;"><div id="problemMeta" class="feed" data-i18n="loadFirst">请先载入题库</div><div id="problemList" class="list"></div></div>
+    </div>
+    <div id="practiceResult" class="feed" style="margin-top:10px;"></div>
+  </div>
+
+  <!-- AI Battle -->
+  <div id="view-battle" class="panel" style="display:none;">
+    <h2 data-i18n="battleTitle">♛ AI 对战 · 棋子专项训练</h2>
+    <div class="row battle-toolbar" style="flex-wrap:wrap;">
+      <select id="battleVariant" style="min-width:140px;" onchange="updateVariantDesc()"></select>
+      <select id="battleMode">
+        <option value="teaching" data-i18n="teachingMode">简单陪练</option>
+        <option value="standard" data-i18n="standardMode">标准对战</option>
+      </select>
+      <select id="battleDiff" style="min-width:180px;"></select>
+      <button class="btn btn-primary" onclick="startMatch()" data-i18n="start">开始</button>
+      <button class="btn btn-secondary" onclick="suggestMove()" data-i18n="suggest">💡建议</button>
+      <button class="btn btn-ghost" onclick="analyzeGame()" data-i18n="review">📋复盘</button>
+    </div>
+    <div id="battleDifficultyHint" class="feed battle-difficulty-hint"></div>
+    <div id="variantDesc" class="feed battle-variant-desc"></div>
+    <div class="battle-stage">
+      <div class="battle-board-shell">
+        <div id="battleBoard" class="board-wrap"></div>
+        <div class="row battle-move-row">
+          <input id="battleMoveInput" placeholder="输入走法，比如 e2e4，或者直接点棋盘走棋" data-i18n-placeholder="battleInput" style="flex:1;">
+          <button class="btn btn-primary" onclick="submitBattleMove()" data-i18n="move">走棋</button>
+        </div>
+      </div>
+      <div class="battle-details">
+        <div id="battleStatus" class="feed battle-feed" data-i18n="ready">准备开始</div>
+        <div id="moveHistory" class="feed battle-feed battle-history" data-i18n="moveHistoryEmpty">这里会显示完整走子记录</div>
+        <div id="analysisResult" class="feed battle-feed" data-i18n="analysisEmpty">这里会显示 AI 建议、复盘和讲解</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PvP -->
+  <div id="view-pvp" class="panel" style="display:none;">
+    <h2 data-i18n="pvpBattle">👥 双人对战</h2>
+    <div class="row" id="pvpSetup"><label for="pvpTimeControl" data-i18n="pvpTime">对局用时</label><select id="pvpTimeControl" aria-label="对局用时"></select><button class="btn btn-primary" onclick="createPvpRoom()" data-i18n="createRoom">创建房间</button><span style="color:#fff;" data-i18n="or">或</span><input id="joinRoomCode" data-i18n-placeholder="roomCode" placeholder="6位房间号" maxlength="6" style="width:100px;"><button class="btn btn-secondary" onclick="joinPvpRoom()" data-i18n="join">加入</button><button class="btn btn-ghost" onclick="refreshRooms()" data-i18n="refresh">刷新</button><span id="pvpRoomInfo" style="color:var(--gold);"></span></div>
+    <p style="color:var(--muted);" data-i18n="timeHelp"></p>
+    <div id="pvpGameArea" style="display:none;"><div class="row" style="justify-content:center;margin-bottom:10px;"><button class="btn btn-ghost" onclick="exitPvpRoom()" data-i18n="exitGame">退出对战</button><label for="pvpNextTimeControl" data-i18n="nextTime">下一局用时</label><select id="pvpNextTimeControl" aria-label="下一局用时"></select><button class="btn btn-primary" onclick="startNextPvpRoom()" data-i18n="newGame">创建新对局</button></div><div class="row" style="justify-content:center;"><label for="resultFont" data-i18n="resultFont">结果字体</label><select id="resultFont" onchange="setResultFont(this.value)"><option value="brush" data-i18n="fontBrush">飘逸书法</option><option value="default" data-i18n="fontDefault">默认字体</option><option value="serif" data-i18n="fontSerif">经典衬线</option></select></div><div id="pvpGameInfo" style="text-align:center;margin-bottom:8px;"></div><div style="display:flex;justify-content:center;gap:30px;"><div class="clock" id="whiteClock">10:00</div><div class="clock" id="blackClock">10:00</div></div><div id="pvpBoard" class="board-wrap"></div><div class="row" style="justify-content:center;margin-top:8px;"><button class="btn btn-ghost" onclick="resignPvp()" data-i18n="resign">认输</button><button id="offerDrawButton" class="btn btn-ghost" onclick="offerDraw()" data-i18n="offerDraw">提和</button></div><div id="pvpDrawOffer" class="feed" role="status" hidden style="text-align:center;margin-top:8px"></div><div id="pvpStatus" class="feed" style="text-align:center;"></div></div>
+    <div id="activeRooms" class="list" style="margin-top:10px;"></div>
+  </div>
+
+  <!-- Rankings -->
+  <div id="view-rankings" class="panel" style="display:none;">
+    <h2>🏆 <span data-i18n="rankingTitle">排行榜</span></h2>
+    <div id="rankRules"></div>
+    <div class="row"><button class="btn btn-primary btn-rank-tab" data-tab="global" data-i18n="pointsBoard">⭐积分榜</button><button class="btn btn-ghost btn-rank-tab" data-tab="puzzle" data-i18n="puzzleBoard">📝做题榜</button><button class="btn btn-ghost btn-rank-tab" data-tab="battle" data-i18n="battleBoard">⚔对战榜</button><button class="btn btn-ghost" onclick="loadRankings()">🔄</button></div>
+    <div id="rankingsTable" class="list" style="max-height:450px;"></div>
+  </div>
+
+  <!-- Friends -->
+  <div id="view-friends" class="panel" style="display:none;">
+    <h2 data-i18n="friendTitle">💬 好友</h2>
+    <div class="row"><input id="friendSearch" data-i18n-placeholder="friendSearch" placeholder="搜索昵称或手机号" style="flex:1;"><button class="btn btn-primary" onclick="searchFriends()">🔍</button></div>
+    <div id="friendResults"></div>
+    <h3 data-i18n="friendRequests">好友请求</h3><div id="friendRequests"></div>
+    <h3 data-i18n="gameRequests">对战请求</h3><div id="gameRequests"></div>
+    <h3 data-i18n="myFriends">我的好友</h3><div class="row"><label for="friendTimeControl" data-i18n="inviteTime">邀请对战用时</label><select id="friendTimeControl" aria-label="邀请对战用时"></select><button class="btn btn-ghost" onclick="loadFriends()" data-i18n="refresh">刷新</button></div>
+    <div id="friendsList" class="list"></div>
+    <div id="chatPanel" style="margin-top:12px;display:none;"><h3 id="chatTitle">聊天</h3><div id="chatMessages" class="feed" style="max-height:250px;overflow:auto;min-height:100px;"></div><div class="row" style="margin-top:8px;"><input id="chatInput" data-i18n-placeholder="messageInput" placeholder="输入消息" style="flex:1;"><button class="btn btn-primary" onclick="sendChatMsg()" data-i18n="send">发送</button></div></div>
+  </div>
+
+  <!-- Class Student -->
+  <div id="view-classStudent" class="panel" style="display:none;">
+    <h2 data-i18n="myClass">📖 我的班级</h2>
+    <div class="row"><input id="joinCode" data-i18n-placeholder="inviteCode" placeholder="6位邀请码" maxlength="6" style="width:120px;"><button class="btn btn-primary" onclick="joinClass()" data-i18n="joinClass">加入班级</button></div>
+    <div id="classStudentContent"></div>
+  </div>
+
+  <!-- Class Teacher -->
+  <div id="view-classTeacher" class="panel" style="display:none;">
+    <h2 data-i18n="classManagement">🏫 班级管理</h2>
+    <div class="row"><input id="clsName" data-i18n-placeholder="className" placeholder="班级名称" style="flex:1;"><input id="clsCode" data-i18n-placeholder="autoInvite" placeholder="邀请码(留空自动)" maxlength="6" style="width:140px;"><button class="btn btn-primary" onclick="createClass()" data-i18n="create">创建</button></div>
+    <div id="createResult" style="margin-bottom:8px;"></div>
+    <div class="row"><select id="clsSelect" style="flex:1;"><option value="" data-i18n="chooseClass">--选择班级--</option></select><button class="btn btn-ghost" onclick="loadTeacherClasses()" data-i18n="refresh">刷新</button></div>
+    <div id="classTeacherDetail"></div>
+  </div>
+
+  <!-- Parent -->
+  <div id="view-parent" class="panel" style="display:none;">
+    <h2 data-i18n="parentCenter">👨‍👩‍👧 家长中心</h2>
+    <!-- Bind -->
+    <h3 data-i18n="bindCodeTitle">📥 输入学生给的绑定码</h3>
+    <div style="background:rgba(199,155,69,.15);border-radius:8px;padding:10px;margin-bottom:10px;font-size:13px;" data-i18n="bindHelp"></div>
+    <div class="row"><input id="bindCode" data-i18n-placeholder="parentLinkCode" placeholder="学生给的6位码" maxlength="6" style="width:160px;font-size:18px;text-align:center;letter-spacing:4px;"><button class="btn btn-primary" onclick="bindChild()" data-i18n="bindConfirm">确认绑定</button></div>
+    <div id="bindResult" style="margin-bottom:10px;"></div>
+    <!-- Children -->
+    <h3 data-i18n="myChildren">👶 我的孩子</h3><div class="row"><button class="btn btn-ghost" onclick="loadMyChildren()" data-i18n="refresh">刷新</button></div>
+    <div id="childrenList" class="list"></div><div id="childDetail" class="feed" style="margin-top:8px;min-height:40px;"></div>
+    <h3 data-i18n="parentTasks">🟣 家长任务</h3>
+    <div class="row"><select id="parentTaskChildSelect" style="flex:1;"><option value="" data-i18n="chooseChild">--选择孩子--</option></select><input id="parentTaskTitle" data-i18n-placeholder="parentTaskTitle" placeholder="任务内容" maxlength="80" style="flex:2;min-width:180px;"><label><span data-i18n="parentTaskDeadline"></span><input id="parentTaskDeadlineAt" type="datetime-local"></label><button class="btn btn-primary" onclick="createParentTask()" data-i18n="assignParentTask">布置任务</button></div>
+    <p class="form-help" data-i18n="parentTaskHelp"></p><div id="parentTaskList" class="list"></div>
+    <!-- Weekly Report -->
+    <h3 data-i18n="weeklyReport">📊 学习周报</h3>
+    <div class="row"><select id="reportChildSelect" style="flex:1;"><option value="" data-i18n="chooseChild">--选择孩子--</option></select><button class="btn btn-primary" onclick="genReport()" data-i18n="thisWeek">📊生成本周报告</button><button class="btn btn-ghost" onclick="viewReports()" data-i18n="history">📋历史</button></div>
+    <div id="reportResult" style="margin-top:8px;"></div>
+    <!-- Study Plans -->
+    <h3 data-i18n="studyPlan">📋 学习计划</h3>
+    <div class="row"><select id="planChildSelect" style="flex:1;"><option value="" data-i18n="chooseChild">--选择孩子--</option></select></div>
+    <div class="row"><label><span data-i18n="dailyPuzzles"></span><input id="planSolve" type="number" value="5" data-i18n-placeholder="dailyPuzzles" placeholder="每日做题" style="width:100px;"></label><label><span data-i18n="dailyGames"></span><input id="planBattle" type="number" value="1" data-i18n-placeholder="dailyGames" placeholder="每日对战" style="width:100px;"></label><label><span data-i18n="startDate"></span><input id="planStart" type="date" style="width:160px;"></label><label><span data-i18n="endDate"></span><input id="planEnd" type="date" style="width:160px;"></label></div>
+    <div class="row"><label><span data-i18n="planDeadline"></span><input id="planDeadlineAt" type="datetime-local"></label><span class="form-help" data-i18n="planDeadlineHelp"></span></div>
+    <div class="row"><button class="btn btn-primary" onclick="createStudyPlan()" id="planSave" data-i18n="createPlan">创建计划</button><button class="btn btn-ghost" onclick="loadStudyPlans()" data-i18n="refresh">刷新</button></div>
+    <div id="planList"></div>
+  </div>
+</div>
+
+<!-- Bind Modal -->
+<div class="modal-overlay" id="bindModal" style="display:none;">
+  <div class="modal-box" style="text-align:center;">
+    <h3 id="bindModalTitle" data-i18n="linkCodeTitle">🔗 你的绑定码（发给家长）</h3>
+    <div id="bindCodeDisplay" style="font-size:48px;font-weight:800;letter-spacing:10px;color:var(--banner);margin:16px 0;">------</div>
+    <div id="bindCountdown" style="color:var(--muted);"></div>
+    <p style="font-size:13px;color:var(--muted);margin-top:8px;" data-i18n="bindHelp"></p>
+    <div class="row" style="justify-content:center;margin-top:12px;"><button class="btn btn-ghost" id="btnRegenCode" data-i18n="regenerate">🔄 重新生成</button><button class="btn btn-ghost" onclick="closeBindModal()" data-i18n="close">关闭</button></div>
+  </div>
+</div>
+
+<script src="/js/common.js?v=20261025-parent1"></script>
+<script src="/js/ui-copy.js?v=20261025-parent1"></script>
+<script src="/js/presentation.js?v=20261025-parent1"></script>
+<script src="/js/learning-data.js"></script>
+<script src="/js/learning-i18n.js?v=20261025-parent1"></script>
+<script>document.getElementById("langMount").innerHTML = langSelector();</script>
+<script src="/js/management-copy.js?v=20261025-parent1"></script>
+<script src="/js/app.js?v=20261025-parent1"></script>
+<script src="/js/management.js?v=20261025-parent1"></script>
+</body>
+</html>

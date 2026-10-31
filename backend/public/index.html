@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title data-i18n="siteTitle">棋童 - 国际象棋在线学习平台</title>
+  <link rel="stylesheet" href="/css/style.css?v=20261025-parent1" />
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">♜ <span data-i18n="brand">棋童</span></div>
+  <nav>
+    <a href="/" data-i18n="home">首页</a>
+    <a href="/app" data-i18n="training">学习训练</a>
+    <a href="#features" data-i18n="features">功能介绍</a>
+    <span id="langMount"></span>
+    <span id="headerUser" style="display:none;">
+      <span id="headerName" style="color:#fff;margin-right:10px;"></span>
+      <button class="btn btn-ghost" onclick="API.logout()" data-i18n="logout">退出</button>
+    </span>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1><span data-i18n="heroTitleA">用</span><span data-i18n="brand">棋童</span><span data-i18n="heroTitleB">掌握国际象棋</span></h1>
+  <p data-i18n="heroSubtitle">从开局原则到残局技巧，从AI对弈到真人PK，一站式的国际象棋学习平台</p>
+  <div class="cta-row">
+    <a href="/app?trial=1" class="btn btn-primary" style="font-size:16px;padding:12px 28px;">⚡ <span data-i18n="startTraining">试用训练</span></a>
+    <a href="#login" class="btn btn-gold" style="font-size:16px;padding:12px 28px;">🔑 <span data-i18n="loginRegister">登录/注册</span></a>
+  </div>
+</section>
+
+<div class="container">
+  <div class="features" id="features">
+    <div class="feature-card"><div class="icon">📚</div><h3 data-i18n="learningCenter">学习中心</h3><p data-i18n="featureLearn">开局原则 · 经典开局 · 中局策略 · 残局基础 · 常见陷阱</p></div>
+    <div class="feature-card"><div class="icon">⚔</div><h3 data-i18n="practiceCenter">题库训练</h3><p data-i18n="featurePractice">300+精选题目 · AI智能讲解 · 阶梯难度设计</p></div>
+    <div class="feature-card"><div class="icon">♛</div><h3 data-i18n="aiBattle">AI对弈</h3><p data-i18n="featureAi">Stockfish引擎驱动 · 可调难度1-20级 · 走法建议与复盘</p></div>
+    <div class="feature-card"><div class="icon">👥</div><h3 data-i18n="pvpBattle">双人对战</h3><p data-i18n="featurePvp">WebSocket实时对战 · 计时系统 · 好友邀请</p></div>
+    <div class="feature-card"><div class="icon">🏟</div><h3 data-i18n="arenaTitle">公开赛</h3><p data-i18n="featureArena">自动匹配对手 · 公平竞技 · 积分争霸</p></div>
+    <div class="feature-card"><div class="icon">🏆</div><h3 data-i18n="rankingTitle">排行榜</h3><p data-i18n="featureRanks">积分榜 · 做题榜 · 对战榜 · 段位晋升 ♟→♚</p></div>
+    <div class="feature-card"><div class="icon">🏫</div><h3 data-i18n="classManagement">班级管理</h3><p data-i18n="featureClasses">老师创建班级 · 布置作业 · 公告通知</p></div>
+    <div class="feature-card"><div class="icon">👨‍👩‍👧</div><h3 data-i18n="parentCenter">家长中心</h3><p data-i18n="featureParent">绑定孩子 · 学习周报 · AI评语 · 学习计划</p></div>
+  </div>
+
+  <div class="login-box" id="login">
+    <h2 id="authTitle">🔑 登录棋童</h2>
+    <div class="auth-tabs" role="tablist" aria-label="登录或注册" data-i18n-aria-label="loginRegister">
+      <button id="loginTab" class="btn btn-gold" type="button" onclick="setAuthMode('login')" data-i18n="login">账号登录</button>
+      <button id="registerTab" class="btn btn-ghost" type="button" onclick="setAuthMode('register')" data-i18n="register">注册</button>
+    </div>
+    <div class="form-group">
+      <label data-i18n="account">账号</label>
+      <input id="account" data-i18n-placeholder="accountHint" autocomplete="username" placeholder="3-32位字母、数字、下划线或短横线" />
+    </div>
+    <div class="form-group" id="passwordGroup">
+      <label data-i18n="password">密码</label>
+      <input id="password" data-i18n-placeholder="passwordHint" type="password" autocomplete="current-password" placeholder="至少8位密码" />
+    </div>
+    <div class="form-group" id="nameGroup" style="display:none;">
+      <label data-i18n="nickname">昵称</label>
+      <input id="name" data-i18n-placeholder="nameHint" autocomplete="nickname" placeholder="给自己起个名字" />
+    </div>
+    <div class="form-group" id="roleGroup" style="display:none;">
+      <label data-i18n="role">角色</label>
+      <select id="role"><option value="student" data-i18n="student">🧑‍🎓 学生</option><option value="parent" data-i18n="parentRole">👨‍👩‍👧 家长</option><option value="teacher" data-i18n="teacher">👨‍🏫 老师</option></select>
+    </div>
+    <button id="authSubmit" class="btn btn-primary" onclick="submitAuth()" style="width:100%;justify-content:center;font-size:15px;padding:12px;">
+      🚀 登录
+    </button>
+    <div id="loginMsg" style="text-align:center;margin-top:8px;font-size:13px;"></div>
+  </div>
+</div>
+
+<footer style="text-align:center;padding:30px;color:rgba(255,255,255,.3);font-size:12px;">
+  <div style="font-size:16px;margin-bottom:6px;">♜ <span data-i18n="brand">棋童</span></div>
+  <div data-i18n="footer">棋童 · 国际象棋在线学习平台 · 让每个人都能学会下棋</div>
+</footer>
+
+<script src="/js/common.js?v=20261025-parent1"></script>
+<script>
+document.getElementById("langMount").innerHTML = langSelector();
+if (API.autoLogin()) {
+  document.getElementById("headerUser").style.display = "";
+  document.getElementById("headerName").textContent = API.user.displayName;
+  document.getElementById("login").style.display = "none";
+}
+
+let authMode = "login";
+
+function setAuthMode(mode) {
+  authMode = mode;
+  var isRegister = mode === "register";
+  var isLogin = mode === "login";
+  document.getElementById("authTitle").textContent = isRegister ? t("createAccount") : t("loginBrand");
+  document.getElementById("passwordGroup").style.display = "";
+  document.getElementById("password").autocomplete = isRegister ? "new-password" : "current-password";
+  document.getElementById("nameGroup").style.display = isRegister ? "" : "none";
+  document.getElementById("roleGroup").style.display = isRegister ? "" : "none";
+  document.getElementById("authSubmit").textContent = isRegister ? "🚀 " + t("registerStart") : "🚀 " + t("login");
+  document.getElementById("loginTab").className = isLogin ? "btn btn-gold" : "btn btn-ghost";
+  document.getElementById("registerTab").className = isRegister ? "btn btn-gold" : "btn btn-ghost";
+  document.getElementById("loginMsg").textContent = "";
+}
+
+async function submitAuth() {
+  var msg = document.getElementById("loginMsg");
+  msg.textContent = authMode === "register" ? t("registering") : t("loggingIn");
+  try {
+    var account = document.getElementById("account").value.trim();
+    if (authMode === "register") {
+      var password = document.getElementById("password").value;
+      await API.register(account, password, document.getElementById("role").value, document.getElementById("name").value.trim() || t("playerDefault"));
+    } else {
+      var password = document.getElementById("password").value;
+      await API.login(account, password);
+    }
+    msg.innerHTML = '<span style="color:var(--green);">✅ ' + esc(t("loginSuccess")) + '</span>';
+    setTimeout(function() { location.href = "/app"; }, 800);
+  } catch(e) {
+    msg.innerHTML = '<span style="color:var(--banner);">❌ ' + esc(String(e.message || e)) + '</span>';
+  }
+}
+function refreshI18n() { setAuthMode(authMode); document.title = t("siteTitle"); }
+refreshI18n();
+const authReason = new URLSearchParams(location.search).get("reason");
+if (authReason === "session-expired") {
+  // A stale token may have been read before the redirect reached this page.
+  // Force the sign-in form to be visible so the user can recover immediately.
+  API.token = "";
+  API.user = null;
+  localStorage.removeItem("ct_token");
+  localStorage.removeItem("ct_user");
+  document.getElementById("headerUser").style.display = "none";
+  document.getElementById("login").style.display = "";
+  setAuthMode("login");
+  document.getElementById("loginMsg").innerHTML = '<span style="color:var(--banner);">' + esc(t("sessionExpired")) + '</span>';
+}
+</script>
+</body>
+</html>

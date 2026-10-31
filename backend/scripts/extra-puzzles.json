@@ -1,0 +1,1503 @@
+[
+  {
+    "fen": "6k1/8/8/8/8/n7/1Q4K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "寻找黑方无人保护的马",
+      "后直接吃掉它"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "b2a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/n7/8/2Q3K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "寻找黑方无人保护的马",
+      "后直接吃掉它"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa4",
+    "solutionUci": "c2a4",
+    "acceptedAnswers": [
+      "Qxa4"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/n7/8/8/3Q2K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "寻找黑方无人保护的马",
+      "后直接吃掉它"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa5",
+    "solutionUci": "d2a5",
+    "acceptedAnswers": [
+      "Qxa5"
+    ]
+  },
+  {
+    "fen": "6k1/8/n7/8/8/8/4Q1K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "寻找黑方无人保护的马",
+      "后直接吃掉它"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa6",
+    "solutionUci": "e2a6",
+    "acceptedAnswers": [
+      "Qxa6"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/1n6/Q5K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "寻找黑方无人保护的马",
+      "后直接吃掉它"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxb3+",
+    "solutionUci": "a2b3",
+    "acceptedAnswers": [
+      "Qxb3+",
+      "Qxb3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/1n6/8/1Q4K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "寻找黑方无人保护的马",
+      "后直接吃掉它"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxb4",
+    "solutionUci": "b2b4",
+    "acceptedAnswers": [
+      "Qxb4"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/1n6/8/8/1Q4K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "寻找黑方无人保护的马",
+      "后直接吃掉它"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxb5",
+    "solutionUci": "b2b5",
+    "acceptedAnswers": [
+      "Qxb5"
+    ]
+  },
+  {
+    "fen": "6k1/8/1n6/8/8/8/1Q4K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "寻找黑方无人保护的马",
+      "后直接吃掉它"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxb6",
+    "solutionUci": "b2b6",
+    "acceptedAnswers": [
+      "Qxb6"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/2n5/1Q4K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "寻找黑方无人保护的马",
+      "后直接吃掉它"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxc3",
+    "solutionUci": "b2c3",
+    "acceptedAnswers": [
+      "Qxc3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/2n5/8/Q5K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "寻找黑方无人保护的马",
+      "后直接吃掉它"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxc4+",
+    "solutionUci": "a2c4",
+    "acceptedAnswers": [
+      "Qxc4+",
+      "Qxc4"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/2n5/8/8/2Q3K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "寻找黑方无人保护的马",
+      "后直接吃掉它"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxc5",
+    "solutionUci": "c2c5",
+    "acceptedAnswers": [
+      "Qxc5"
+    ]
+  },
+  {
+    "fen": "6k1/8/2n5/8/8/8/2Q3K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "寻找黑方无人保护的马",
+      "后直接吃掉它"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxc6",
+    "solutionUci": "c2c6",
+    "acceptedAnswers": [
+      "Qxc6"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/3n4/2Q3K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "寻找黑方无人保护的马",
+      "后直接吃掉它"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxd3",
+    "solutionUci": "c2d3",
+    "acceptedAnswers": [
+      "Qxd3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/3n4/8/1Q4K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "寻找黑方无人保护的马",
+      "后直接吃掉它"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxd4",
+    "solutionUci": "b2d4",
+    "acceptedAnswers": [
+      "Qxd4"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/3n4/8/8/Q5K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "寻找黑方无人保护的马",
+      "后直接吃掉它"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxd5+",
+    "solutionUci": "a2d5",
+    "acceptedAnswers": [
+      "Qxd5+",
+      "Qxd5"
+    ]
+  },
+  {
+    "fen": "6k1/8/3n4/8/8/8/3Q2K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "寻找黑方无人保护的马",
+      "后直接吃掉它"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxd6",
+    "solutionUci": "d2d6",
+    "acceptedAnswers": [
+      "Qxd6"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/4n3/3Q2K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "寻找黑方无人保护的马",
+      "后直接吃掉它"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxe3",
+    "solutionUci": "d2e3",
+    "acceptedAnswers": [
+      "Qxe3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/4n3/8/2Q3K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "寻找黑方无人保护的马",
+      "后直接吃掉它"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxe4",
+    "solutionUci": "c2e4",
+    "acceptedAnswers": [
+      "Qxe4"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/4n3/8/8/1Q4K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "寻找黑方无人保护的马",
+      "后直接吃掉它"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxe5",
+    "solutionUci": "b2e5",
+    "acceptedAnswers": [
+      "Qxe5"
+    ]
+  },
+  {
+    "fen": "6k1/8/4n3/8/8/8/Q5K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "寻找黑方无人保护的马",
+      "后直接吃掉它"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxe6+",
+    "solutionUci": "a2e6",
+    "acceptedAnswers": [
+      "Qxe6+",
+      "Qxe6"
+    ]
+  },
+  {
+    "fen": "7k/P7/8/8/8/8/6K1/8 w - - 0 1",
+    "type": "promotion",
+    "kp": "兵升变",
+    "diff": 2,
+    "gb": "14",
+    "q": "白兵到达底线应该如何升变？",
+    "h": [
+      "兵走到第八排必须升变",
+      "升变为皇后是最强的选择"
+    ],
+    "th": [
+      "promotion"
+    ],
+    "solution": "a8=N",
+    "solutionUci": "a7a8n",
+    "acceptedAnswers": [
+      "a8=N"
+    ]
+  },
+  {
+    "fen": "6k1/P7/8/8/8/8/6K1/8 w - - 0 1",
+    "type": "promotion",
+    "kp": "兵升变",
+    "diff": 2,
+    "gb": "14",
+    "q": "白兵到达底线应该如何升变？",
+    "h": [
+      "兵走到第八排必须升变",
+      "升变为皇后是最强的选择"
+    ],
+    "th": [
+      "promotion"
+    ],
+    "solution": "a8=N",
+    "solutionUci": "a7a8n",
+    "acceptedAnswers": [
+      "a8=N"
+    ]
+  },
+  {
+    "fen": "5k2/P7/8/8/8/8/6K1/8 w - - 0 1",
+    "type": "promotion",
+    "kp": "兵升变",
+    "diff": 2,
+    "gb": "14",
+    "q": "白兵到达底线应该如何升变？",
+    "h": [
+      "兵走到第八排必须升变",
+      "升变为皇后是最强的选择"
+    ],
+    "th": [
+      "promotion"
+    ],
+    "solution": "a8=N",
+    "solutionUci": "a7a8n",
+    "acceptedAnswers": [
+      "a8=N"
+    ]
+  },
+  {
+    "fen": "2k5/P7/8/8/8/8/6K1/8 w - - 0 1",
+    "type": "promotion",
+    "kp": "兵升变",
+    "diff": 2,
+    "gb": "14",
+    "q": "白兵到达底线应该如何升变？",
+    "h": [
+      "兵走到第八排必须升变",
+      "升变为皇后是最强的选择"
+    ],
+    "th": [
+      "promotion"
+    ],
+    "solution": "a8=N",
+    "solutionUci": "a7a8n",
+    "acceptedAnswers": [
+      "a8=N"
+    ]
+  },
+  {
+    "fen": "4k3/P7/8/8/8/8/6K1/8 w - - 0 1",
+    "type": "promotion",
+    "kp": "兵升变",
+    "diff": 2,
+    "gb": "14",
+    "q": "白兵到达底线应该如何升变？",
+    "h": [
+      "兵走到第八排必须升变",
+      "升变为皇后是最强的选择"
+    ],
+    "th": [
+      "promotion"
+    ],
+    "solution": "a8=N",
+    "solutionUci": "a7a8n",
+    "acceptedAnswers": [
+      "a8=N"
+    ]
+  },
+  {
+    "fen": "3k4/P7/8/8/8/8/6K1/8 w - - 0 1",
+    "type": "promotion",
+    "kp": "兵升变",
+    "diff": 2,
+    "gb": "14",
+    "q": "白兵到达底线应该如何升变？",
+    "h": [
+      "兵走到第八排必须升变",
+      "升变为皇后是最强的选择"
+    ],
+    "th": [
+      "promotion"
+    ],
+    "solution": "a8=N",
+    "solutionUci": "a7a8n",
+    "acceptedAnswers": [
+      "a8=N"
+    ]
+  },
+  {
+    "fen": "8/P6k/8/8/8/8/6K1/8 w - - 0 1",
+    "type": "promotion",
+    "kp": "兵升变",
+    "diff": 2,
+    "gb": "14",
+    "q": "白兵到达底线应该如何升变？",
+    "h": [
+      "兵走到第八排必须升变",
+      "升变为皇后是最强的选择"
+    ],
+    "th": [
+      "promotion"
+    ],
+    "solution": "a8=N",
+    "solutionUci": "a7a8n",
+    "acceptedAnswers": [
+      "a8=N"
+    ]
+  },
+  {
+    "fen": "7k/1P6/8/8/8/8/6K1/8 w - - 0 1",
+    "type": "promotion",
+    "kp": "兵升变",
+    "diff": 2,
+    "gb": "14",
+    "q": "白兵到达底线应该如何升变？",
+    "h": [
+      "兵走到第八排必须升变",
+      "升变为皇后是最强的选择"
+    ],
+    "th": [
+      "promotion"
+    ],
+    "solution": "b8=N",
+    "solutionUci": "b7b8n",
+    "acceptedAnswers": [
+      "b8=N"
+    ]
+  },
+  {
+    "fen": "6k1/1P6/8/8/8/8/6K1/8 w - - 0 1",
+    "type": "promotion",
+    "kp": "兵升变",
+    "diff": 2,
+    "gb": "14",
+    "q": "白兵到达底线应该如何升变？",
+    "h": [
+      "兵走到第八排必须升变",
+      "升变为皇后是最强的选择"
+    ],
+    "th": [
+      "promotion"
+    ],
+    "solution": "b8=N",
+    "solutionUci": "b7b8n",
+    "acceptedAnswers": [
+      "b8=N"
+    ]
+  },
+  {
+    "fen": "5k2/1P6/8/8/8/8/6K1/8 w - - 0 1",
+    "type": "promotion",
+    "kp": "兵升变",
+    "diff": 2,
+    "gb": "14",
+    "q": "白兵到达底线应该如何升变？",
+    "h": [
+      "兵走到第八排必须升变",
+      "升变为皇后是最强的选择"
+    ],
+    "th": [
+      "promotion"
+    ],
+    "solution": "b8=N",
+    "solutionUci": "b7b8n",
+    "acceptedAnswers": [
+      "b8=N"
+    ]
+  },
+  {
+    "fen": "4k3/1P6/8/8/8/8/6K1/8 w - - 0 1",
+    "type": "promotion",
+    "kp": "兵升变",
+    "diff": 2,
+    "gb": "14",
+    "q": "白兵到达底线应该如何升变？",
+    "h": [
+      "兵走到第八排必须升变",
+      "升变为皇后是最强的选择"
+    ],
+    "th": [
+      "promotion"
+    ],
+    "solution": "b8=N",
+    "solutionUci": "b7b8n",
+    "acceptedAnswers": [
+      "b8=N"
+    ]
+  },
+  {
+    "fen": "3k4/1P6/8/8/8/8/6K1/8 w - - 0 1",
+    "type": "promotion",
+    "kp": "兵升变",
+    "diff": 2,
+    "gb": "14",
+    "q": "白兵到达底线应该如何升变？",
+    "h": [
+      "兵走到第八排必须升变",
+      "升变为皇后是最强的选择"
+    ],
+    "th": [
+      "promotion"
+    ],
+    "solution": "b8=N",
+    "solutionUci": "b7b8n",
+    "acceptedAnswers": [
+      "b8=N"
+    ]
+  },
+  {
+    "fen": "8/1P5k/8/8/8/8/6K1/8 w - - 0 1",
+    "type": "promotion",
+    "kp": "兵升变",
+    "diff": 2,
+    "gb": "14",
+    "q": "白兵到达底线应该如何升变？",
+    "h": [
+      "兵走到第八排必须升变",
+      "升变为皇后是最强的选择"
+    ],
+    "th": [
+      "promotion"
+    ],
+    "solution": "b8=N",
+    "solutionUci": "b7b8n",
+    "acceptedAnswers": [
+      "b8=N"
+    ]
+  },
+  {
+    "fen": "8/kP6/8/8/8/8/6K1/8 w - - 0 1",
+    "type": "promotion",
+    "kp": "兵升变",
+    "diff": 2,
+    "gb": "14",
+    "q": "白兵到达底线应该如何升变？",
+    "h": [
+      "兵走到第八排必须升变",
+      "升变为皇后是最强的选择"
+    ],
+    "th": [
+      "promotion"
+    ],
+    "solution": "b8=N",
+    "solutionUci": "b7b8n",
+    "acceptedAnswers": [
+      "b8=N"
+    ]
+  },
+  {
+    "fen": "7k/2P5/8/8/8/8/6K1/8 w - - 0 1",
+    "type": "promotion",
+    "kp": "兵升变",
+    "diff": 2,
+    "gb": "14",
+    "q": "白兵到达底线应该如何升变？",
+    "h": [
+      "兵走到第八排必须升变",
+      "升变为皇后是最强的选择"
+    ],
+    "th": [
+      "promotion"
+    ],
+    "solution": "c8=N",
+    "solutionUci": "c7c8n",
+    "acceptedAnswers": [
+      "c8=N"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/n7/6K1/Q7 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "黑马没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "a1a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/Q7/n7/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "黑马没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "a4a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/Q7/8/n7/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "黑马没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "a5a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/Q7/8/8/n7/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "黑马没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "a6a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/n7/1Q4K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "黑马没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "b2a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/1Q6/n7/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "黑马没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "b4a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/n7/6K1/2Q5 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "黑马没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "c1a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/n1Q5/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "黑马没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "c3a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/2Q5/8/n7/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "黑马没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "c5a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/n2Q4/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "黑马没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "d3a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/3Q4/8/8/n7/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "黑马没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "d6a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/n3Q3/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "黑马没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "e3a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/n4Q2/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "黑马没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "f3a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/n6Q/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护马？",
+    "h": [
+      "黑马没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "h3a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/b7/6K1/Q7 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护象？",
+    "h": [
+      "黑象没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "a1a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/Q7/b7/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护象？",
+    "h": [
+      "黑象没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "a4a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/Q7/8/b7/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护象？",
+    "h": [
+      "黑象没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "a5a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/Q7/8/8/b7/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护象？",
+    "h": [
+      "黑象没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "a6a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/b7/1Q4K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护象？",
+    "h": [
+      "黑象没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "b2a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/1Q6/b7/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护象？",
+    "h": [
+      "黑象没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "b4a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/b7/6K1/2Q5 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护象？",
+    "h": [
+      "黑象没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "c1a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/b1Q5/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护象？",
+    "h": [
+      "黑象没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "c3a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/2Q5/8/b7/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护象？",
+    "h": [
+      "黑象没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "c5a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/b2Q4/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护象？",
+    "h": [
+      "黑象没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "d3a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/3Q4/8/8/b7/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护象？",
+    "h": [
+      "黑象没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "d6a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/b3Q3/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护象？",
+    "h": [
+      "黑象没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "e3a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/b4Q2/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护象？",
+    "h": [
+      "黑象没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "f3a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/b6Q/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护象？",
+    "h": [
+      "黑象没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "h3a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/r7/6K1/Q7 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护车？",
+    "h": [
+      "黑车没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "a1a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/Q7/r7/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护车？",
+    "h": [
+      "黑车没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "a4a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/Q7/8/r7/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护车？",
+    "h": [
+      "黑车没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "a5a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/Q7/8/8/r7/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护车？",
+    "h": [
+      "黑车没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "a6a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/r7/1Q4K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护车？",
+    "h": [
+      "黑车没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "b2a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/1Q6/r7/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护车？",
+    "h": [
+      "黑车没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "b4a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/r7/6K1/2Q5 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护车？",
+    "h": [
+      "黑车没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "c1a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/8/8/r1Q5/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护车？",
+    "h": [
+      "黑车没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "c3a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  },
+  {
+    "fen": "6k1/8/8/2Q5/8/r7/6K1/8 w - - 0 1",
+    "type": "hanging_piece",
+    "kp": "后吃无保护子",
+    "diff": 3,
+    "gb": "13",
+    "q": "白后如何吃掉黑方的无保护车？",
+    "h": [
+      "黑车没有保护",
+      "后可以直接吃掉"
+    ],
+    "th": [
+      "hangingPiece",
+      "capture"
+    ],
+    "solution": "Qxa3",
+    "solutionUci": "c5a3",
+    "acceptedAnswers": [
+      "Qxa3"
+    ]
+  }
+]

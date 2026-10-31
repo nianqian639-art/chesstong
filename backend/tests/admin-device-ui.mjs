@@ -1,0 +1,35 @@
+import http from 'node:http';
+import {chromium} from 'playwright';
+import {mkdtemp,copyFile,writeFile,readFile} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import path from 'node:path';
+import {spawn} from 'node:child_process';
+import assert from 'node:assert/strict';
+const dir=await mkdtemp(path.join(tmpdir(),'ct-admin-ui-'));
+for(const file of ['bridge.mjs','index.html','admin.js','style.css'])await copyFile('tools/admin-device/'+file,path.join(dir,file));
+await writeFile(path.join(dir,'config.json'),JSON.stringify({host:'127.0.0.1',port:19382}));
+const server=spawn(process.execPath,[path.join(dir,'bridge.mjs')],{env:{...process.env,CT_ADMIN_NO_OPEN:'1'},stdio:'pipe'});
+await new Promise((resolve,reject)=>{server.stdout.once('data',resolve);server.once('error',reject);});
+const url=await readFile(path.join(dir,'start-url'),'utf8');
+const browser=await chromium.launch({channel:'chrome',headless:true});
+const errors=[];
+try{
+ const origin='http://127.0.0.1:19382';
+ assert.equal((await fetch(origin)).status,403);
+ assert.equal((await fetch(origin+'/api/read',{method:'POST',headers:{'Content-Type':'application/json'},body:'{"action":"summary"}'})).status,403);
+ const context=await browser.newContext(),page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/api/read',route=>{const query=route.request().postDataJSON();const data=query.action==='summary'?{tables:[{key:'users',label:'用户与家长绑定',count:2},{key:'classes',label:'班级与成员',count:1}]}:{table:query.table,label:query.table==='users'?'用户与家长绑定':'班级与成员',columns:['id','displayName','childIds'],rows:query.q?[{id:'u2',displayName:'Second',childIds:[]}]:[{id:'u1',displayName:'<img src=x onerror=alert(1)>',childIds:['child-1']},{id:'u2',displayName:'Second',childIds:[]}],page:1,limit:50,total:query.q?1:2};return route.fulfill({json:data});});
+ await page.goto(url);await page.waitForFunction(()=>document.getElementById('status').textContent.includes('已连接'));
+ assert.equal(await page.locator('#rows tr').count(),2);assert.equal(await page.locator('#rows img').count(),0);
+ await page.locator('#rows button').first().click();assert.ok((await page.locator('#detail').innerText()).includes('child-1'));
+ await page.locator('#query').fill('Second');await page.locator('#search').click();await page.waitForFunction(()=>document.querySelectorAll('#rows tr').length===1);
+ await page.screenshot({path:'/tmp/ct-admin-preview.png',fullPage:true});
+ const cookies=await context.cookies();const authCookie=cookies.map(c=>c.name+'='+c.value).join(';');
+ assert.equal((await fetch(origin+'/api/read',{method:'POST',headers:{Cookie:authCookie,Origin:'https://evil.example','Content-Type':'application/json','X-Device-Request':'1'},body:'{"action":"summary"}'})).status,403);
+ assert.equal((await fetch(origin+'/api/read',{method:'POST',headers:{Cookie:authCookie,Origin:origin,'Content-Type':'application/json','X-Device-Request':'1'},body:'{"action":"execute"}'})).status,400);
+ assert.equal(await new Promise((resolve,reject)=>{http.get(origin,{headers:{Host:'evil.example',Cookie:authCookie}},r=>{r.resume();resolve(r.statusCode);}).on('error',reject);}),403);
+ assert.equal((await fetch(url)).status,403);
+ assert.equal((await fetch(origin+'/api/read',{method:'GET',headers:{Cookie:authCookie}})).status,404);
+ const other=await browser.newContext();const stranger=await other.newPage();await stranger.goto(origin);assert.ok((await stranger.locator('body').innerText()).includes('重新打开'));
+ assert.deepEqual(errors,[]);console.log('PASS: local-only session, one-use launch, cross-origin and Host rejection, blocked writes, separate browser denied, safe table rendering, search and details.');
+}finally{await browser.close();server.kill();}
