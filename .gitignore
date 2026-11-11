@@ -16,3 +16,4 @@ tools/stockfish/stockfish/stockfish
 tools/stockfish/stockfish/stockfish.exe
 tools/stockfish/stockfish/stockfish-windows-*.exe
 tools/stockfish/stockfish/src/*.nnue
+output/pptx/

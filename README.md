@@ -48,12 +48,20 @@ npm run build
 
 ## 项目进展
 
-项目由个人独立开发，目前处于合作测试阶段，并与重庆市渝中区棋院开展测试合作。测试反馈主要用于完善题目交互、家长与教师流程、实时对局及 AI 讲解体验。
+项目由个人独立开发，目前处于测试阶段。正在根据实际使用反馈，继续完善题目交互、家长与教师流程、实时对局及 AI 讲解体验。
+
+## 项目海报
+
+- [打印版海报 PDF（36 × 48 英寸）](output/poster/chesstong-project-poster.pdf)
+- [可编辑海报 PPTX](output/poster/chesstong-project-poster.pptx)
+- [海报预览 PNG](output/poster/chesstong-project-poster-preview.png)
+
+本机保留的演讲稿历史版本位于 `output/pptx/`，不纳入 Git 版本控制。
 
 ## 演示
 
 - 在线体验：<https://chesstong.top>
-- 仓库地址：<https://github.com/nianqian639-art/chesstong>（当前为私有仓库）
+- 仓库地址：<https://github.com/nianqian639-art/chesstong>
 
 ## 第三方组件
 
