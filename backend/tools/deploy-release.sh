@@ -4,7 +4,7 @@ PATCH_DIR="$(cd "$(dirname "$0")" && pwd)"
 APP_DIR="${CT_APP_DIR:-/opt/chesstong/backend}"
 BACKUP_ROOT="${CT_BACKUP_ROOT:-/opt/chesstong/backups}"
 NODE_BIN="${CT_NODE_BIN:-/usr/bin/node}"
-BACKUP_DIR="$BACKUP_ROOT/parent1-$(date +%Y%m%d-%H%M%S)-$$"
+BACKUP_DIR="$BACKUP_ROOT/kid-learning1-$(date +%Y%m%d-%H%M%S)-$$"
 [[ "$APP_DIR" = /* && "$APP_DIR" != / && -d "$APP_DIR/node_modules" ]]
 [[ -f "$APP_DIR/.env.production" && -x "$NODE_BIN" ]]
 cd "$PATCH_DIR"
@@ -83,9 +83,9 @@ systemctl is-active --quiet chesstong-backend
 curl -fsS --max-time 5 http://127.0.0.1:8080/health
 test "$(curl -sS --max-time 5 -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/admin/overview)" = 403
 curl -fsS --max-time 5 http://127.0.0.1:8080/app > "$BACKUP_DIR/app.html"
-grep -q '20261025-parent1' "$BACKUP_DIR/app.html"
+grep -q '20261107-kid-learning1' "$BACKUP_DIR/app.html"
 trap - ERR
-echo "Parent-task and weekly-report update deployed. Backup: $BACKUP_DIR"
+echo "Kid learning and board editor update deployed. Backup: $BACKUP_DIR"
 if curl -fsS --max-time 10 https://chesstong.top/health > "$BACKUP_DIR/https-health.json" 2>/dev/null; then
   echo 'Public HTTPS health check passed.'
 else

@@ -7,6 +7,8 @@ let lastBattleEngineMove = null;
 let battleOver = false;
 let dailyMissions = [];
 let rankTab = "global", currentSection = null, bindTimer = null;
+let currentLearnMode = localStorage.getItem("ct.learnMode") === "child" ? "child" : "standard";
+let currentLearnTopicIndex = 0, moveGame = null;
 let editorFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", selectedPiece = "K", currentClassId = "";
 const BATTLE_LEVELS = [
   { tier: 1, difficulty: 1 }, { tier: 2, difficulty: 2 }, { tier: 3, difficulty: 4 },
@@ -536,6 +538,75 @@ document.addEventListener("click", e => {
 });
 
 // ── Learning ──
+const LEARN_KID_COPY = {
+  zh: {
+    standard: "详细讲解", child: "小棋手图解", readMore: "展开详细讲解", hideMore: "收起讲解",
+    gameTitle: "棋步小闯关", gameDesc: "点棋子，再点闪亮的目标格，一起认识每种棋子的走法。", start: "开始闯关",
+    step: "第 {step} / {total} 关", stars: "星星 {score} / {total}", tap: "先点棋子，再点闪亮的格子。",
+    target: "把{piece}从 {from} 走到目标格", correct: "太棒了！这步走对啦！", retry: "再看看闪亮的格子，试一次。",
+    complete: "全部闯关成功！", replay: "再玩一次", next: "下一关", back: "返回课程",
+    pieces: ["小兵", "小马", "小象", "小车", "小后", "小王"],
+    summaries: { principles:"把兵和马放到棋盘中间，能走的地方就变多啦。", openings:"开局先让小棋子出发，再把王保护好。", middlegame:"找一找可以前进的路，和伙伴棋子一起合作。", endgame:"棋子变少时，王也要出来帮忙，把兵送到终点。", traps:"先停一停，看看对手是不是藏了小陷阱。" }
+  },
+  en: {
+    standard: "Full lesson", child: "Picture mode", readMore: "Read the full lesson", hideMore: "Hide lesson",
+    gameTitle: "Move Quest", gameDesc: "Tap a piece, then the glowing square to learn how each piece moves.", start: "Start quest",
+    step: "Level {step} of {total}", stars: "Stars {score} / {total}", tap: "Tap the piece, then the glowing square.",
+    target: "Move the {piece} from {from} to the target", correct: "Great move! You got it!", retry: "Look for the glowing square and try again.",
+    complete: "Quest complete!", replay: "Play again", next: "Next level", back: "Back to lessons",
+    pieces: ["pawn", "knight", "bishop", "rook", "queen", "king"],
+    summaries: { principles:"Bring pawns and knights toward the middle to open more paths.", openings:"Bring your smaller pieces out, then keep your king safe.", middlegame:"Find an open path and let your pieces help one another.", endgame:"When few pieces remain, bring your king out to help a pawn reach the end.", traps:"Pause before taking a gift. It may hide a trick." }
+  },
+  ja: {
+    standard: "詳しいレッスン", child: "こども図解", readMore: "詳しい説明を見る", hideMore: "説明を閉じる",
+    gameTitle: "駒の動きクエスト", gameDesc: "駒をタップしてから、光るマスをタップして動きを覚えよう。", start: "クエスト開始",
+    step: "レベル {step} / {total}", stars: "スター {score} / {total}", tap: "駒をタップしてから、光るマスをタップ。",
+    target: "{piece}を {from} から目標のマスへ動かそう", correct: "すばらしい！正しい手です！", retry: "光るマスを見て、もう一度。",
+    complete: "クエストクリア！", replay: "もう一度遊ぶ", next: "次のレベル", back: "レッスンに戻る",
+    pieces: ["ポーン", "ナイト", "ビショップ", "ルーク", "クイーン", "キング"],
+    summaries: { principles:"ポーンやナイトを中央へ進めると、動ける場所が増えます。", openings:"まず小さな駒を出し、キングを守りましょう。", middlegame:"進める道を探し、駒どうしで助け合いましょう。", endgame:"駒が少なくなったら、キングも出てポーンを助けます。", traps:"取る前にひと呼吸。相手のわなかもしれません。" }
+  },
+  fr: {
+    standard: "Cours complet", child: "Mode illustré", readMore: "Lire le cours complet", hideMore: "Masquer le cours",
+    gameTitle: "Défi des pièces", gameDesc: "Touchez une pièce, puis la case lumineuse pour apprendre ses déplacements.", start: "Commencer",
+    step: "Niveau {step} / {total}", stars: "Étoiles {score} / {total}", tap: "Touchez la pièce, puis la case lumineuse.",
+    target: "Déplacez le {piece} de {from} vers la cible", correct: "Bravo ! Bien joué !", retry: "Repérez la case lumineuse et réessayez.",
+    complete: "Défi terminé !", replay: "Rejouer", next: "Niveau suivant", back: "Retour aux cours",
+    pieces: ["pion", "cavalier", "fou", "tour", "dame", "roi"],
+    summaries: { principles:"Avancez les pions et les cavaliers vers le centre pour ouvrir des chemins.", openings:"Sortez les petites pièces, puis mettez le roi à l’abri.", middlegame:"Cherchez un chemin libre et faites coopérer vos pièces.", endgame:"Quand il reste peu de pièces, le roi peut aider un pion à avancer.", traps:"Avant de prendre un cadeau, vérifiez qu’il ne cache pas un piège." }
+  },
+  es: {
+    standard: "Lección completa", child: "Modo ilustrado", readMore: "Ver la lección completa", hideMore: "Ocultar la lección",
+    gameTitle: "Reto de movimientos", gameDesc: "Toca una pieza y luego la casilla iluminada para aprender cómo se mueve.", start: "Empezar reto",
+    step: "Nivel {step} / {total}", stars: "Estrellas {score} / {total}", tap: "Toca la pieza y luego la casilla iluminada.",
+    target: "Mueve el {piece} de {from} a la casilla objetivo", correct: "¡Muy bien! ¡Movimiento correcto!", retry: "Busca la casilla iluminada e inténtalo otra vez.",
+    complete: "¡Reto completado!", replay: "Jugar otra vez", next: "Siguiente nivel", back: "Volver a las lecciones",
+    pieces: ["peón", "caballo", "alfil", "torre", "dama", "rey"],
+    summaries: { principles:"Lleva peones y caballos al centro para abrir más caminos.", openings:"Saca las piezas pequeñas y después protege a tu rey.", middlegame:"Busca un camino libre y deja que tus piezas cooperen.", endgame:"Cuando quedan pocas piezas, el rey puede ayudar al peón a avanzar.", traps:"Antes de aceptar un regalo, comprueba que no sea una trampa." }
+  }
+};
+const MOVE_GAME_LEVELS = [
+  { piece: "P", fen: "8/8/8/8/8/8/4P3/8 w - - 0 1", from: "e2", to: "e3" },
+  { piece: "N", fen: "8/8/8/8/8/8/8/6N1 w - - 0 1", from: "g1", to: "f3" },
+  { piece: "B", fen: "8/8/8/8/8/8/8/2B5 w - - 0 1", from: "c1", to: "g5" },
+  { piece: "R", fen: "8/8/8/8/8/8/8/R7 w - - 0 1", from: "a1", to: "a4" },
+  { piece: "Q", fen: "8/8/8/8/8/8/8/3Q4 w - - 0 1", from: "d1", to: "h5" },
+  { piece: "K", fen: "8/8/8/8/8/8/8/4K3 w - - 0 1", from: "e1", to: "e2" }
+];
+const CHILD_VISUAL_FEN = {
+  principles: "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+  openings: "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3",
+  middlegame: "4k3/8/2p2p2/3pP3/3P4/2P2P2/8/4K3 w - - 0 1",
+  endgame: "8/8/8/3k4/8/4K3/4P3/8 w - - 0 1",
+  traps: "r1bqk1nr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 3 3"
+};
+function learnKidCopy() { return LEARN_KID_COPY[getLang()] || LEARN_KID_COPY.en; }
+function kidText(key, vars = {}) {
+  let value = learnKidCopy()[key] || LEARN_KID_COPY.en[key] || key;
+  Object.entries(vars).forEach(([name, replacement]) => { value = value.replaceAll(`{${name}}`, String(replacement)); });
+  return value;
+}
+
 function initLearn() {
   const secs = [
     { key:"principles", icon:"🏰", title:t("learnPrinciples"), desc:t("learnPrinciples") },
@@ -545,7 +616,8 @@ function initLearn() {
     { key:"traps", icon:"🎯", title:t("learnTraps"), desc:t("learnTraps") },
   ];
   document.getElementById("learnSections").innerHTML = secs.map(s => `
-    <div class="dash-card" onclick="showLearnSection('${s.key}')"><div class="icon">${s.icon}</div><h3>${s.title}</h3><p>${s.desc}</p></div>`).join("");
+    <div class="dash-card" onclick="showLearnSection('${s.key}')"><div class="icon">${s.icon}</div><h3>${s.title}</h3><p>${s.desc}</p></div>`).join("") + `
+    <div class="dash-card learn-game-launch" onclick="startMoveGame()"><div class="icon">🎮</div><h3>${kidText("gameTitle")}</h3><p>${kidText("gameDesc")}</p><button class="btn btn-gold" type="button">${kidText("start")}</button></div>`;
   document.getElementById("learnDetail").style.display = "none";
   document.getElementById("learnSections").style.display = "";
 }
@@ -554,6 +626,12 @@ function showLearnSection(key) {
   currentSection = key;
   document.getElementById("learnSections").style.display = "none";
   document.getElementById("learnDetail").style.display = "";
+  document.getElementById("learnGame").style.display = "none";
+  document.getElementById("learnTopicList").style.display = "";
+  document.getElementById("learnModeSwitch").style.display = "";
+  document.getElementById("learnContent").style.display = "";
+  document.getElementById("learnBoard").style.display = "";
+  document.getElementById("learnTips").style.display = "";
   const topics = learningTopics().filter(t => t.category === key);
   document.getElementById("learnTopicList").innerHTML = topics.map((t,i) => `<div class="list-item" style="cursor:pointer;" onclick="showTopic('${key}',${i})">${t.title}</div>`).join("");
   if (topics.length) showTopic(key, 0);
@@ -561,14 +639,111 @@ function showLearnSection(key) {
 
 function showTopic(key, idx) {
   const t = learningTopics().filter(x => x.category === key)[idx];
-  document.getElementById("learnContent").innerHTML = t.content;
+  if (!t) return;
+  currentLearnTopicIndex = idx;
+  const modeSwitch = document.getElementById("learnModeSwitch");
+  modeSwitch.innerHTML = `<div class="learn-mode-control" role="group" aria-label="Learning format"><button type="button" class="btn ${currentLearnMode === "standard" ? "btn-gold" : "btn-ghost"}" onclick="setLearnMode('standard')">${kidText("standard")}</button><button type="button" class="btn ${currentLearnMode === "child" ? "btn-gold" : "btn-ghost"}" onclick="setLearnMode('child')">${kidText("child")}</button></div>`;
+  const content = document.getElementById("learnContent");
+  if (currentLearnMode === "child") {
+    const parsed = document.createElement("div");
+    parsed.innerHTML = t.content;
+    const summary = learnKidCopy().summaries[key] || parsed.querySelector("p")?.textContent || t.title;
+    const pieceSymbol = PIECES_FULL[({ principles:"P", openings:"N", middlegame:"B", endgame:"K", traps:"Q" })[key]];
+    content.innerHTML = `<div class="child-lesson"><div class="child-lesson-heading"><span class="child-lesson-piece" aria-hidden="true">${pieceSymbol}</span><div><h3>${esc(t.title)}</h3><p>${esc(summary)}</p></div></div><details class="child-lesson-details"><summary>${kidText("readMore")}</summary><div>${t.content}</div></details></div>`;
+  } else {
+    content.innerHTML = t.content;
+  }
   const bd = document.getElementById("learnBoard");
-  if (t.keyFen) { bd.style.display = ""; renderBoard(bd, t.keyFen, "", ()=>{}); }
+  const visualFen = currentLearnMode === "child" ? (t.keyFen || CHILD_VISUAL_FEN[key]) : t.keyFen;
+  if (visualFen) { bd.style.display = ""; renderBoard(bd, visualFen, "", ()=>{}); }
   else bd.style.display = "none";
-  document.getElementById("learnTips").innerHTML = (t.tips||[]).map(tip => `<span class="tag">💡 ${esc(tip)}</span>`).join("");
+  document.getElementById("learnTips").innerHTML = (t.tips||[]).slice(0, currentLearnMode === "child" ? 1 : undefined).map(tip => `<span class="tag">💡 ${esc(tip)}</span>`).join("");
+}
+
+function setLearnMode(mode) {
+  currentLearnMode = mode === "child" ? "child" : "standard";
+  localStorage.setItem("ct.learnMode", currentLearnMode);
+  if (currentSection) showTopic(currentSection, currentLearnTopicIndex);
+}
+
+function startMoveGame() {
+  currentSection = null;
+  moveGame = { level: 0, score: 0, fen: MOVE_GAME_LEVELS[0].fen, selected: "", solved: false, done: false };
+  document.getElementById("learnSections").style.display = "none";
+  document.getElementById("learnDetail").style.display = "";
+  document.getElementById("learnTopicList").style.display = "none";
+  document.getElementById("learnModeSwitch").style.display = "none";
+  document.getElementById("learnContent").style.display = "none";
+  document.getElementById("learnBoard").style.display = "none";
+  document.getElementById("learnTips").style.display = "none";
+  const game = document.getElementById("learnGame");
+  game.style.display = "";
+  renderMoveGame();
+}
+
+function renderMoveGame() {
+  if (!moveGame) return;
+  const root = document.getElementById("learnGame"), copy = learnKidCopy(), total = MOVE_GAME_LEVELS.length;
+  if (moveGame.done) {
+    root.innerHTML = `<section class="move-game move-game-complete"><div class="move-game-celebrate" aria-hidden="true">🏆</div><h3>${kidText("complete")}</h3><p>${kidText("stars", { score: moveGame.score, total })}</p><button class="btn btn-gold" type="button" onclick="startMoveGame()">${kidText("replay")}</button><button class="btn btn-ghost" type="button" onclick="backToLearn()">${kidText("back")}</button></section>`;
+    return;
+  }
+  const level = MOVE_GAME_LEVELS[moveGame.level];
+  const pieceName = copy.pieces[moveGame.level];
+  const feedback = moveGame.solved ? kidText("correct") : moveGame.feedback || kidText("tap");
+  const moveClass = moveGame.solved ? "move-game-feedback is-correct" : "move-game-feedback";
+  root.innerHTML = `<section class="move-game"><div class="move-game-head"><div><h3>${kidText("gameTitle")}</h3><p>${kidText("step", { step: moveGame.level + 1, total })} · ${kidText("stars", { score: moveGame.score, total })}</p></div><button class="btn btn-ghost" type="button" onclick="backToLearn()">${kidText("back")}</button></div><p class="move-game-prompt">${kidText("target", { piece: pieceName, from: level.from })}</p><div id="moveGameBoard" class="board-wrap" aria-label="${esc(kidText("gameTitle"))}"></div><p class="${moveClass}" role="status" aria-live="polite">${feedback}</p>${moveGame.solved ? `<button class="btn btn-gold" type="button" onclick="nextMoveGameLevel()">${kidText("next")}</button>` : ""}</section>`;
+  const board = document.getElementById("moveGameBoard");
+  renderBoard(board, moveGame.fen, moveGame.selected, handleMoveGameSquare);
+  const target = board.querySelector(`[data-square="${level.to}"]`);
+  if (target) target.classList.add("move-game-target");
+}
+
+function handleMoveGameSquare(square) {
+  if (!moveGame || moveGame.solved || moveGame.done) return;
+  const level = MOVE_GAME_LEVELS[moveGame.level];
+  if (!moveGame.selected) {
+    if (square === level.from) {
+      moveGame.selected = square;
+      moveGame.feedback = kidText("tap");
+    } else {
+      moveGame.feedback = kidText("tap");
+    }
+  } else if (square === level.to) {
+    const board = parseFen(moveGame.fen);
+    const fromRow = 8 - Number(level.from[1]), fromCol = "abcdefgh".indexOf(level.from[0]);
+    const toRow = 8 - Number(level.to[1]), toCol = "abcdefgh".indexOf(level.to[0]);
+    board[toRow][toCol] = board[fromRow][fromCol];
+    board[fromRow][fromCol] = "";
+    moveGame.fen = boardToFen(board);
+    moveGame.selected = "";
+    moveGame.solved = true;
+    moveGame.score++;
+    playUiSound("correct");
+  } else {
+    moveGame.selected = square === level.from ? square : "";
+    moveGame.feedback = kidText("retry");
+    playUiSound("wrong");
+  }
+  renderMoveGame();
+}
+
+function nextMoveGameLevel() {
+  if (!moveGame) return;
+  moveGame.level++;
+  if (moveGame.level >= MOVE_GAME_LEVELS.length) moveGame.done = true;
+  else {
+    moveGame.fen = MOVE_GAME_LEVELS[moveGame.level].fen;
+    moveGame.selected = "";
+    moveGame.solved = false;
+    moveGame.feedback = "";
+  }
+  if (moveGame.done) playUiSound("level");
+  renderMoveGame();
 }
 
 function backToLearn() {
+  moveGame = null;
   document.getElementById("learnDetail").style.display = "none";
   document.getElementById("learnSections").style.display = "";
 }

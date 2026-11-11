@@ -195,10 +195,18 @@ function openHomework(cid,h){
 }
 function saveEditorDraft(){if(manageEl("hwTitle"))editorDraft={title:manageEl("hwTitle").value,solutions:manageEl("hwSolutions").value,due:manageEl("hwDue").value};}
 function showBoardEditor(){
-  manageEl("classTeacherDetail").innerHTML=`<button class="btn btn-ghost" onclick="showClassDetail(currentClassId)">${t("backClasses")}</button><h4>${t("createHomework")}</h4><div class="piece-palette">${["K","Q","R","B","N","P","k","q","r","b","n","p","."].map(p=>`<button class="btn btn-ghost" data-piece="${p}">${PIECES_FULL[p]}</button>`).join("")}</div><p>${t("fenHelp")}</p><div class="row"><input id="editorFenInput" aria-label="FEN" style="flex:1"><button class="btn btn-ghost" id="applyFen">${t("applyPosition")}</button></div><div id="editorBoard" class="board-wrap"></div><div id="editorFenDisplay" style="overflow-wrap:anywhere"></div><div class="row"><input id="hwTitle" placeholder="${t("homeworkTitle")}" maxlength="60"><input id="hwSolutions" placeholder="${t("solutions")}"><input type="date" id="hwDue"></div><button class="btn btn-primary" onclick="saveCustomHomework()">${t("save")}</button><div id="hwSaveResult" role="status"></div>`;
+  manageEl("classTeacherDetail").innerHTML=`<button class="btn btn-ghost" onclick="showClassDetail(currentClassId)">${t("backClasses")}</button><h4>${t("createHomework")}</h4><div class="piece-palette">${["K","Q","R","B","N","P","k","q","r","b","n","p","."].map(p=>`<button class="btn btn-ghost" data-piece="${p}">${PIECES_FULL[p]}</button>`).join("")}</div><p>${t("fenHelp")}</p><div class="row"><input id="editorFenInput" aria-label="FEN" style="flex:1"><button class="btn btn-ghost" id="applyFen">${t("applyPosition")}</button><button class="btn btn-ghost" id="clearEditorBoard" onclick="clearBoardEditorPosition()">${t("clearBoard")}</button></div><div id="editorBoard" class="board-wrap"></div><div id="editorFenDisplay" style="overflow-wrap:anywhere"></div><div class="row"><input id="hwTitle" placeholder="${t("homeworkTitle")}" maxlength="60"><input id="hwSolutions" placeholder="${t("solutions")}"><input type="date" id="hwDue"></div><button class="btn btn-primary" onclick="saveCustomHomework()">${t("save")}</button><div id="hwSaveResult" role="status"></div>`;
   manageEl("editorFenInput").value=editorFen;manageEl("hwTitle").value=editorDraft.title;manageEl("hwSolutions").value=editorDraft.solutions;manageEl("hwDue").value=editorDraft.due||new Date(Date.now()+7*86400000).toISOString().slice(0,10);
   document.querySelectorAll("[data-piece]").forEach(b=>{b.style.outline=b.dataset.piece===selectedPiece?"2px solid var(--gold)":"";b.onclick=()=>{saveEditorDraft();selectedPiece=b.dataset.piece;showBoardEditor();};});
   manageEl("applyFen").onclick=()=>{const fen=manageEl("editorFenInput").value.trim();if(!/^(?:[prnbqkPRNBQK1-8]+\/){7}[prnbqkPRNBQK1-8]+ [wb] /.test(fen)){toast(t("requestFailed"));return;}editorFen=fen;renderEditorBoard();};
+  renderEditorBoard();
+}
+function clearBoardEditorPosition(){
+  const side=editorFen.split(" ")[1]==="b"?"b":"w";
+  editorFen=`8/8/8/8/8/8/8/8 ${side} - - 0 1`;
+  selectedPiece=".";
+  manageEl("editorFenInput").value=editorFen;
+  document.querySelectorAll("[data-piece]").forEach(button=>{button.style.outline=button.dataset.piece==="."?"2px solid var(--gold)":"";});
   renderEditorBoard();
 }
 async function saveCustomHomework(){saveEditorDraft();try{await API.req(`/class/${currentClassId}/homework`,"POST",{title:editorDraft.title.trim(),fen:editorFen,solutions:editorDraft.solutions.split(",").map(s=>s.trim()).filter(Boolean),dueDate:editorDraft.due});editorDraft={title:"",solutions:"",due:""};toast(t("saved"));await showClassDetail(currentClassId);}catch(e){failAt("hwSaveResult",e);}}
