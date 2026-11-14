@@ -83,8 +83,8 @@ try{
  pass('public matchmaking with all seven time controls');
  if(process.env.RELEASE_LIVE_MODELS==='1'){
   const suggestion=await req(null,'/trial/match/suggest','POST',{fen:new (await import('chess.js')).Chess().fen(),difficulty:10});assert.equal(suggestion.source,'stockfish');
-  const explanation=await req(null,'/trial/problems/explain','POST',{problemId:'starter-001',answer:'a1a8',isCorrect:true,language:'en'});assert.equal(explanation.source,'qwen');assert.ok(!/[\u3400-\u9fff]/.test(explanation.explanation));
-  pass('live Stockfish and Qwen English output');
+  const explanation=await req(null,'/trial/problems/explain','POST',{problemId:'starter-001',answer:'a1a8',isCorrect:true,language:'en'});assert.equal(explanation.source,'qwen','Puzzle explanation did not come from Qwen');assert.notEqual(explanation.engineFeedback,'unavailable','Stockfish did not return a puzzle move');assert.ok(!/[\u3400-\u9fff]/.test(explanation.explanation));
+  pass('live Stockfish puzzle move and Qwen English explanation');
   for(const language of ['zh','en']){const voice=await req(a,'/tts','POST',{text:language==='zh'?'我们开始学习国际象棋。':'Let us learn chess together.',preset:'story',language});assert.ok(voice.url);assert.ok(['dashscope','dashscope-direct'].includes(voice.source));console.log('TTS '+language+': '+voice.source);}
   pass('live Chinese and English voice generation');
  }

@@ -21,6 +21,8 @@ const html = `<!doctype html>
       --dark: #7a4320;
     }
     * { box-sizing: border-box; }
+    .loading-spinner { display:inline-block;width:14px;height:14px;margin-right:6px;vertical-align:-2px;border:2px solid rgba(255,255,255,.28);border-top-color:var(--gold);border-radius:50%;animation:demo-spin .75s linear infinite; }
+    @keyframes demo-spin { to { transform:rotate(360deg); } }
     body {
       margin: 0;
       min-height: 100vh;
@@ -1136,9 +1138,11 @@ const html = `<!doctype html>
   }
   function onPracticeClick(square, piece) {
     if (!currentProblem) return;
+    var solverSide = (currentProblem.fen.split(/\s+/)[1] || "w");
+    var isSolverPiece = piece && (piece === piece.toUpperCase()) === (solverSide === "w");
     if (!practiceSelected) {
-      if (!piece || piece !== piece.toUpperCase()) {
-        byId("practiceResult").textContent = "请先选择白方棋子。";
+      if (!isSolverPiece) {
+        byId("practiceResult").textContent = "请先选择" + (solverSide === "w" ? "白方" : "黑方") + "棋子。";
         return;
       }
       practiceSelected = square;
@@ -1150,10 +1154,17 @@ const html = `<!doctype html>
       renderProblem();
       return;
     }
+    if (isSolverPiece) {
+      practiceSelected = square;
+      renderProblem();
+      return;
+    }
     var move = practiceSelected + square;
-    var answer = (currentProblem.solutionUci || "").length === 5 && move === currentProblem.solutionUci.slice(0, 4)
-      ? currentProblem.solutionUci
-      : move;
+    var rows = parseBoard(currentProblem.fen);
+    var from = practiceSelected;
+    var movingPiece = rows[8 - Number(from[1])]?.["abcdefgh".indexOf(from[0])];
+    if ((movingPiece === "P" && square[1] === "8") || (movingPiece === "p" && square[1] === "1")) move += "q";
+    var answer = move;
     submitPractice(answer);
   }
   function submitPractice(answer) {
@@ -1167,12 +1178,12 @@ const html = `<!doctype html>
       .then(function (submit) {
         var score = submit.awardedPoints ? " +" + submit.awardedPoints + "积分" : (submit.alreadySolved ? " 已答对过，不重复加分" : "");
         var header = submit.isCorrect ? "答对了！" + score : "还差一点。标准答案：" + submit.correctAnswer;
+        byId("practiceResult").innerHTML = "<span class='loading-spinner' aria-hidden='true'></span>正在核对棋盘、请求千问生成讲解…";
         return api("/problems/explain", "POST", {
           problemId: currentProblem.id,
-          answer: answer,
-          isCorrect: submit.isCorrect
+          answer: answer
         }, true).then(function (explain) {
-          byId("practiceResult").innerHTML = escapeHtml(header) + "<br>讲解: " + escapeHtml(aiSourceLabel(explain.source)) + "<br><br>" + escapeHtml(explain.explanation);
+          byId("practiceResult").innerHTML = escapeHtml(header) + "<br>讲解: " + escapeHtml(aiSourceLabel(explain.source)) + "<br><br>" + escapeHtml(explain.explanation) + "<br><small>Stockfish 最佳着法: " + escapeHtml(explain.engineFeedback || "暂未返回") + "</small>";
           renderProblem();
         });
       })
@@ -1248,6 +1259,7 @@ const html = `<!doctype html>
       byId("battleStatus").textContent = "请先开始对局。";
       return;
     }
+    byId("battleStatus").innerHTML = "<span class='loading-spinner' aria-hidden='true'></span>Stockfish 正在分析并选择应手…";
     api("/match/move", "POST", {
       matchId: matchId,
       fen: battleFen,
@@ -1274,6 +1286,7 @@ const html = `<!doctype html>
       byId("analysis").textContent = "请先开始对局。";
       return;
     }
+    byId("analysis").innerHTML = "<span class='loading-spinner' aria-hidden='true'></span>Stockfish 正在计算建议…";
     api("/match/suggest", "POST", {
       fen: battleFen,
       difficulty: Number(byId("difficulty").value || 8)
@@ -1305,6 +1318,7 @@ const html = `<!doctype html>
       byId("analysis").textContent = "暂无走子，无法复盘。";
       return;
     }
+    byId("analysis").innerHTML = "<span class='loading-spinner' aria-hidden='true'></span>千问正在根据已记录着法生成复盘…";
     api("/match/analyze", "POST", { pgn: pgn }, true).then(function (data) {
       var keyMoves = (data.keyMoves || []).map(function (m) { return "第" + m.ply + "手 " + escapeHtml(m.san) + "（" + escapeHtml(m.tag) + "）"; }).join("<br>");
       byId("analysis").innerHTML = "讲解: " + escapeHtml(aiSourceLabel(data.source)) + "<br>" + escapeHtml(data.summary) + "<br><br>关键着法:<br>" + (keyMoves || "暂无明显关键着法");

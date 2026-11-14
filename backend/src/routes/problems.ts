@@ -3,7 +3,8 @@ import { Chess } from "chess.js";
 import { z } from "zod";
 import { authGuard } from "../middleware/auth.js";
 import { db, addPoints } from "../services/db.js";
-import { generateExplanation } from "../services/ai.js";
+import { generateExplanation, generatePuzzleFollowup } from "../services/ai.js";
+import { analyzePuzzleMove } from "../services/chess.js";
 import { getUserById, nowIso, requireUserId } from "../services/common.js";
 import type { Problem } from "../models/types.js";
 
@@ -20,9 +21,9 @@ const submitBody = z.object({
 const explainBody = z.object({
   problemId: z.string(),
   answer: z.string().min(1),
-  isCorrect: z.boolean(),
   language: z.enum(["zh", "en", "ja", "fr", "es"]).optional()
 });
+const askBody = z.object({ problemId: z.string(), answer: z.string().min(1), question: z.string().trim().min(1).max(500), history: z.array(z.object({role:z.enum(["user","assistant"]),content:z.string().max(500)})).max(6).optional(), language: z.enum(["zh", "en", "ja", "fr", "es"]).optional() });
 
 type AppLanguage = "zh" | "en" | "ja" | "fr" | "es";
 
@@ -58,21 +59,30 @@ const answerCandidates = (answers: Array<string | undefined>): string[] => {
     .filter(Boolean);
 };
 
+const parsePuzzleMove = (chess: Chess, answer: string) => {
+  const uci = /^([a-h][1-8])([a-h][1-8])([qrbn])?$/i.exec(answer.trim());
+  if (!uci) return chess.move(answer, { strict: false });
+
+  const from = uci[1].toLowerCase();
+  const to = uci[2].toLowerCase();
+  const piece = chess.get(from as any);
+  const promotes = piece?.type === "p" && ((piece.color === "w" && to[1] === "8") || (piece.color === "b" && to[1] === "1"));
+  return chess.move({ from: from as any, to: to as any, promotion: (uci[3]?.toLowerCase() ?? (promotes ? "q" : undefined)) as any });
+};
+
 const buildAcceptedAnswerSet = (fen: string, answers: Array<string | undefined>): Set<string> => {
   const accepted = new Set<string>();
 
   for (const answer of answerCandidates(answers)) {
-    accepted.add(normalizeAnswer(answer));
-
     try {
       const chess = new Chess(fen);
-      const move = chess.move(answer, { strict: false });
+      const move = parsePuzzleMove(chess, answer);
       if (move) {
         accepted.add(normalizeAnswer(move.san));
         accepted.add(moveToUci(move));
       }
     } catch {
-      // Keep the raw accepted answer even when it is a shorthand label, not a legal move.
+      // Invalid puzzle answers are ignored; they cannot make a learner's move correct.
     }
   }
 
@@ -84,26 +94,27 @@ const isMateInOneProblem = (problem: (typeof db.problems)[number]): boolean => {
 };
 
 export const judgeAnswer = (problem: (typeof db.problems)[number], answer: string): boolean => {
-  const normalizedAnswer = normalizeAnswer(answer);
-  const accepted = buildAcceptedAnswerSet(problem.fen, [problem.solution, problem.solutionUci, ...(problem.acceptedAnswers ?? [])]);
-
-  if (accepted.has(normalizedAnswer)) {
-    return true;
-  }
-
   try {
     const chess = new Chess(problem.fen);
-    const move = chess.move(answer, { strict: false });
+    const move = parsePuzzleMove(chess, answer);
     if (!move) {
       return false;
     }
-    if (isMateInOneProblem(problem) && chess.isCheckmate()) {
-      return true;
-    }
+    if (isMateInOneProblem(problem)) return chess.isCheckmate();
+
+    const accepted = buildAcceptedAnswerSet(problem.fen, [problem.solution, problem.solutionUci, ...(problem.acceptedAnswers ?? [])]);
     return accepted.has(normalizeAnswer(move.san)) || accepted.has(moveToUci(move));
   } catch {
     return false;
   }
+};
+
+const withoutPuzzleSolutions = (problem: Problem): Omit<Problem, "solution" | "solutionUci" | "acceptedAnswers"> => {
+  const publicProblem = { ...problem } as Partial<Problem>;
+  delete publicProblem.solution;
+  delete publicProblem.solutionUci;
+  delete publicProblem.acceptedAnswers;
+  return publicProblem as Omit<Problem, "solution" | "solutionUci" | "acceptedAnswers">;
 };
 
 export const problemRoutes: FastifyPluginAsync = async (app) => {
@@ -119,7 +130,7 @@ export const problemRoutes: FastifyPluginAsync = async (app) => {
       }
       return true;
     });
-    return { items: list.map((problem) => localizeProblem(problem, language)) };
+    return { items: list.map((problem) => withoutPuzzleSolutions(localizeProblem(problem, language))) };
   });
 
   app.post("/problems/submit", { preHandler: [authGuard] }, async (request, reply) => {
@@ -173,18 +184,34 @@ export const problemRoutes: FastifyPluginAsync = async (app) => {
 
     const language = body.language ?? requestLanguage(request);
     const localizedProblem = localizeProblem(problem, language);
+    const stockfish = await analyzePuzzleMove(problem.fen);
     const explain = await generateExplanation({
       question: localizedProblem.question,
       answer: problem.solution,
-      isCorrect: body.isCorrect,
+      answerUci: problem.solutionUci,
+      fen: problem.fen,
+      isCorrect: judgeAnswer(problem, body.answer),
+      learnerAnswer: body.answer,
       knowledgePoint: localizedProblem.knowledgePoint,
       audience: user?.role === "student" ? "child" : "general",
-      language
+      language,
+      stockfish
     });
 
     return {
       explanation: explain.text,
-      source: explain.source
+      source: explain.source,
+      engineFeedback: explain.engineFeedback
     };
+  });
+
+  app.post("/problems/ask", { preHandler: [authGuard] }, async (request, reply) => {
+    const body = askBody.parse(request.body);
+    const problem = db.problems.find((item) => item.id === body.problemId);
+    if (!problem) return reply.code(404).send({ message: "题目不存在" });
+    const user = getUserById(requireUserId(request));
+    const stockfish = await analyzePuzzleMove(problem.fen);
+    const result = await generatePuzzleFollowup({ question: problem.question, answer: problem.solution, answerUci: problem.solutionUci, learnerAnswer: body.answer, fen: problem.fen, isCorrect: judgeAnswer(problem, body.answer), knowledgePoint: problem.knowledgePoint, learnerQuestion: body.question, conversationHistory: body.history, audience: user?.role === "student" ? "child" : "general", language: body.language ?? requestLanguage(request), stockfish });
+    return { answer: result.text, source: result.source };
   });
 };

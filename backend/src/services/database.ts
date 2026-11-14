@@ -947,6 +947,27 @@ function initDatabase(): void {
     logger.info({ count: allProblems.length }, "Seeded problems");
   }
 
+  // Correct the built-in positions without touching attempts or user-created puzzles.
+  const correctedPuzzleIds = new Set(["starter-011", "starter-016", "starter-017", "starter-023", "starter-029"]);
+  const correctedProblems = allProblems.filter((problem) => correctedPuzzleIds.has(problem.id));
+  const updateBuiltInPuzzle = sqlite.prepare(
+    `UPDATE problems SET gradeBand = ?, type = ?, difficulty = ?, knowledgePoint = ?, fen = ?, question = ?, solution = ?, solutionUci = ?, acceptedAnswers = ?, hints = ?, rating = ?, themes = ?, source = ? WHERE id = ?`,
+  );
+  const migrateBuiltInPuzzles = sqlite.transaction((problems: Problem[]) => {
+    for (const problem of problems) {
+      updateBuiltInPuzzle.run(
+        problem.gradeBand, problem.type, problem.difficulty, problem.knowledgePoint,
+        problem.fen, problem.question, problem.solution, problem.solutionUci ?? null,
+        problem.acceptedAnswers ? JSON.stringify(problem.acceptedAnswers) : null,
+        JSON.stringify(problem.hints), problem.rating ?? null,
+        problem.themes ? JSON.stringify(problem.themes) : null,
+        problem.source ? JSON.stringify(problem.source) : null,
+        problem.id,
+      );
+    }
+  });
+  migrateBuiltInPuzzles(correctedProblems);
+
   const missionCount = (sqlite.prepare("SELECT COUNT(*) as cnt FROM missions").get() as { cnt: number }).cnt;
   if (missionCount === 0) {
     logger.info("Seeding missions...");

@@ -550,7 +550,8 @@ button,input,select,textarea {font-family:inherit;}
 .explanation-feedback { margin-top:10px; padding:11px 13px; border-radius:9px; display:flex; align-items:center; gap:9px; background:rgba(199,155,69,.12); border:1px solid rgba(199,155,69,.28); color:#f1dba8; }
 .explanation-success { display:block; background:rgba(53,89,67,.16); border-color:rgba(83,170,119,.35); }
 .explanation-error { background:rgba(132,54,62,.16); border-color:rgba(226,109,113,.35); }
-.loading-spinner { width:17px; height:17px; flex:0 0 17px; border:2px solid rgba(255,255,255,.24); border-top-color:var(--gold); border-radius:50%; animation:ct-spin .75s linear infinite; }
+.loading-spinner { display:inline-block; vertical-align:middle; margin-right:6px; width:17px; height:17px; flex:0 0 17px; border:2px solid rgba(255,255,255,.24); border-top-color:var(--gold); border-radius:50%; animation:ct-spin .75s linear infinite; }
+.ai-source,.engine-feedback { display:inline-block; margin:4px 6px; opacity:.82; }
 @keyframes ct-spin { to { transform:rotate(360deg); } }
 [data-explain-button][aria-busy="true"] { opacity:.72; cursor:wait; }
 .parent-task-card { max-width:920px; margin:12px auto 16px; padding:16px; border:2px solid #a98aff; border-radius:13px; background:linear-gradient(145deg,rgba(126,87,194,.23),rgba(46,33,75,.32)); box-shadow:0 8px 24px rgba(58,35,98,.18); color:#f4edff; }

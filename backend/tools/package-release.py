@@ -7,7 +7,7 @@ import tempfile
 import zipfile
 
 root = Path(__file__).resolve().parents[1]
-name = 'chesstong-release-20261107-kid-learning1'
+name = 'chesstong-release-20261114-puzzle-qwen-stockfish-v2'
 stage = Path(tempfile.mkdtemp(prefix='ct-parent1-stage-')) / name
 stage.mkdir()
 files = sorted(str(p.relative_to(root)) for folder in ('src', 'public')
@@ -19,20 +19,25 @@ for file in files:
     shutil.copy2(root / file, target)
 (stage / 'FILES').write_text('\n'.join(files) + '\n')
 shutil.copy2(root / 'tools/deploy-release.sh', stage / 'deploy.sh')
-(stage / 'README.txt').write_text('''棋童正式版程序更新包 kid-learning1（2026-11-07）
+(stage / 'README.txt').write_text('''棋童正式版程序更新包 puzzle-qwen-stockfish-v2（2026-11-14）
 
 此包从当前工作树生成，只有部署脚本完成线上检查后才代表部署成功。
-本次更新包括棋盘/棋子对比度、文字可读性、幼儿课程图解模式与棋步闯关，
-以及教师布置棋盘作业的一键清空棋子；并包含当前工作树中的其他正式版文件。
+本次修复错题被讲解成答对、复盘把 AI 着法算成玩家着法的问题。习题默认讲解
+和后续追问保留千问；服务端先重新判题，并把 FEN、执方、棋盘棋子、学生走法、
+标准答案、合法应手和 Stockfish 实际返回的最佳着法传给千问。输出中的未授权
+着法、错题说成答对、以及错误声称将杀都会退回服务器核验文本。若无 Stockfish
+反馈，会明确标示不可用；本版本引擎接口不提供评估分数或完整变化。
 
 上传到服务器 /root 后，在 Workbench 执行：
   cd /root
-  unzip chesstong-release-20261107-kid-learning1.zip
-  cd chesstong-release-20261107-kid-learning1
+  unzip chesstong-release-20261114-puzzle-qwen-stockfish-v2.zip
+  cd chesstong-release-20261114-puzzle-qwen-stockfish-v2
   bash deploy.sh
 
 部署先在候选目录构建，再用临时数据库检查账号、聊天、真实双人连接、
-匹配和千问/Stockfish/中英语音，成功后才更新服务。期间无需输入 API Key。
+匹配、实时 Stockfish 题目着法、Qwen 讲解与中英语音，成功后才更新服务。
+正式环境必须已在 .env.production 中配置 QWEN_API_KEY 或 DASHSCOPE_API_KEY，
+并确保 STOCKFISH_SERVICE_URL 指向可用引擎；无需在终端粘贴密钥。
 程序与数据库自动备份到 /opt/chesstong/backups/kid-learning1-时间-进程号。
 更新后的服务检查失败会恢复程序，不回滚用户在此期间产生的数据。
 任何构建或模型检查失败，先保留终端信息及备份目录内的日志。

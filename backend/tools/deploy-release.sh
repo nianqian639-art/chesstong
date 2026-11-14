@@ -83,9 +83,9 @@ systemctl is-active --quiet chesstong-backend
 curl -fsS --max-time 5 http://127.0.0.1:8080/health
 test "$(curl -sS --max-time 5 -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/admin/overview)" = 403
 curl -fsS --max-time 5 http://127.0.0.1:8080/app > "$BACKUP_DIR/app.html"
-grep -q '20261107-kid-learning1' "$BACKUP_DIR/app.html"
+grep -q '20261114-puzzle-qwen-evidence-2' "$BACKUP_DIR/app.html"
 trap - ERR
-echo "Kid learning and board editor update deployed. Backup: $BACKUP_DIR"
+echo "Verified Qwen puzzle explanations and Stockfish feedback deployed. Backup: $BACKUP_DIR"
 if curl -fsS --max-time 10 https://chesstong.top/health > "$BACKUP_DIR/https-health.json" 2>/dev/null; then
   echo 'Public HTTPS health check passed.'
 else

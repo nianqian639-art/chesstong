@@ -25,7 +25,7 @@ import os,sys
 url=sys.argv[-1]
 if url.startswith('https:'): sys.exit(7)
 if url.endswith('/admin/overview'): print('403',end='')
-elif url.endswith('/app'): print('old marker' if os.environ.get('CT_FAKE_BAD_MARKER') else '20261107-kid-learning1')
+elif url.endswith('/app'): print('old marker' if os.environ.get('CT_FAKE_BAD_MARKER') else '20261114-puzzle-qwen-evidence-2')
 elif url.endswith('/health'): print('{"status":"ok"}')
 else: sys.exit(22)
 ''')

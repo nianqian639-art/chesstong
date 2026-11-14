@@ -55,7 +55,7 @@ function speechHarness() {
     toast: (v: unknown) => notices.push(v), t: (v: string) => v,
   });
   const source = readFileSync(new URL('../public/js/app.js', import.meta.url), 'utf8');
-  vm.runInContext('let speakSession=0,currentTtsAudio=null,speechVoices=[];\n' + source.slice(source.indexOf('function splitSpeech('), source.indexOf('function speakButton(')), context);
+  vm.runInContext('let speakSession=0,currentTtsAudio=null,speechVoices=[],activeSpeechButton=null,activeSpeechButtonOriginal="";\n' + source.slice(source.indexOf('function splitSpeech('), source.indexOf('function speakButton(')), context);
   return { context, requests, audio, spoken, notices };
 }
 const flush = async () => { for (let i = 0; i < 8; i++) await Promise.resolve(); };

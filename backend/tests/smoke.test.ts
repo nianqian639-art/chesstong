@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { Chess } from "chess.js";
 import { buildServer } from "../src/server.js";
 import { db } from "../src/services/db.js";
+import { allProblems } from "../src/data/puzzles.js";
+import { judgeAnswer } from "../src/routes/problems.js";
 
 const testPhone = () => "139" + String(Date.now()).slice(-7) + String(Math.floor(Math.random() * 10));
 const testUsPhone = () => "+1223" + String(Date.now()).slice(-6) + String(Math.floor(Math.random() * 10));
@@ -141,6 +144,69 @@ describe("api smoke", () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.json().items.length).toBeGreaterThanOrEqual(200);
+    expect(JSON.stringify(response.json().items)).not.toMatch(/"(?:solution|solutionUci|acceptedAnswers)"/);
+    await app.close();
+  });
+
+  it("keeps all built-in puzzle positions and answer moves legal and on-target", () => {
+    const parseMove = (chess: Chess, text: string) => {
+      const uci = /^([a-h][1-8])([a-h][1-8])([qrbn])?$/i.exec(text);
+      if (!uci) return chess.move(text, { strict: false });
+      const from = uci[1].toLowerCase();
+      const to = uci[2].toLowerCase();
+      const piece = chess.get(from as any);
+      const promotes = piece?.type === "p" && ((piece.color === "w" && to[1] === "8") || (piece.color === "b" && to[1] === "1"));
+      return chess.move({ from: from as any, to: to as any, promotion: (uci[3]?.toLowerCase() ?? (promotes ? "q" : undefined)) as any });
+    };
+
+    expect(allProblems).toHaveLength(297);
+    for (const problem of allProblems) {
+      const position = new Chess(problem.fen);
+      const board = position.board();
+      for (let rank = 0; rank < 8; rank += 1) {
+        for (let file = 0; file < 8; file += 1) {
+          const piece = board[rank][file];
+          if (!piece || piece.type !== "k" || piece.color === position.turn()) continue;
+          const square = `${"abcdefgh"[file]}${8 - rank}`;
+          expect(position.isAttacked(square as any, piece.color === "w" ? "b" : "w"), `${problem.id}: non-moving king is already in check`).toBe(false);
+        }
+      }
+
+      const answerPosition = new Chess(problem.fen);
+      const answer = parseMove(answerPosition, problem.solutionUci ?? problem.solution);
+      expect(answer, `${problem.id}: reference answer must be legal`).toBeTruthy();
+      if (problem.type === "mate_in_1" || problem.question.includes("一步将死")) {
+        expect(answerPosition.isCheckmate(), `${problem.id}: reference answer must actually mate`).toBe(true);
+      }
+      for (const candidate of problem.acceptedAnswers ?? []) {
+        expect(parseMove(new Chess(problem.fen), candidate), `${problem.id}: accepted answer ${candidate} must be legal`).toBeTruthy();
+      }
+    }
+  });
+
+  it("does not trust answer strings when the underlying mate or move is wrong", () => {
+    const badMate = {
+      id: "bad-mate", gradeBand: "14", type: "mate_in_1", difficulty: 2,
+      knowledgePoint: "车与王配合", fen: "8/8/8/8/8/6K1/6R1/7k w - - 0 1",
+      question: "白车一步将死。", solution: "Rh2#", solutionUci: "g2h2",
+      acceptedAnswers: ["Rh2#", "Rh2"], hints: []
+    };
+    const pinnedKnight = {
+      id: "bad-fork", gradeBand: "13", type: "fork", difficulty: 3,
+      knowledgePoint: "骑士双攻", fen: "8/4k3/8/8/1q6/2N5/8/4K3 w - - 0 1",
+      question: "白马跳到 d5 后有什么效果？", solution: "Nd5+", solutionUci: "c3d5",
+      acceptedAnswers: ["Nd5+", "Nd5"], hints: []
+    };
+
+    expect(judgeAnswer(badMate as any, "Rh2#")).toBe(false);
+    expect(judgeAnswer(pinnedKnight as any, "c3d5")).toBe(false);
+  });
+
+  it("keeps guest puzzle answers hidden until an attempt is submitted", async () => {
+    const app = buildServer();
+    const response = await app.inject({ method: "GET", url: "/trial/problems" });
+    expect(response.statusCode).toBe(200);
+    expect(JSON.stringify(response.json().items)).not.toMatch(/"(?:solution|solutionUci|acceptedAnswers)"/);
     await app.close();
   });
 

@@ -14,7 +14,7 @@ Open `http://localhost:8080/demo`.
 
 ## Mac AI Defaults
 
-The backend defaults to local Ollama:
+The backend defaults to local Ollama for general generation. Puzzle explanations and follow-up questions prefer Qwen when `QWEN_API_KEY` or `DASHSCOPE_API_KEY` is configured; otherwise they use the configured AI provider and fall back to verified server-generated text if the model is unavailable.
 
 ```env
 AI_PROVIDER=ollama
@@ -23,7 +23,9 @@ OLLAMA_MODEL=qwen3:8b
 STOCKFISH_SERVICE_URL=http://localhost:8081
 ```
 
-`/problems/explain` and `/match/analyze` use Ollama when available and fall back to local deterministic text if the model is unavailable or times out.
+`/problems/explain` and `/trial/problems/explain` send the server-judged answer, side to move, board pieces, puzzle solution, and verified Stockfish best move to Qwen. `/problems/ask` and `/trial/problems/ask` preserve the same evidence for follow-up questions. Invalid chess claims or incorrect answer judgments fall back to server-generated text. Stockfish's current service supplies a best move only, not an evaluation score or full line.
+
+The release preflight checks for a real Qwen response and a Stockfish result before updating production. Configure `QWEN_API_KEY` or `DASHSCOPE_API_KEY` and a working `STOCKFISH_SERVICE_URL` in `.env.production` first.
 
 ## Stockfish
 

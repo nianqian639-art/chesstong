@@ -110,7 +110,7 @@ function renderWeeklyReport(r){
 }
 async function genReport(force){
   const cid=manageEl("reportChildSelect").value;if(!cid){toast(t("chooseChild"));return;}
-  const reportLanguage=getLang();manageEl("reportResult").textContent=t("generating");
+  const reportLanguage=getLang();manageEl("reportResult").innerHTML=aiLoadingMarkup(t("generating"));
   try{const d=await API.req(`/parent/child/${cid}/generate-report${force?"?force=true":""}`,"POST",{});if(manageEl("reportChildSelect").value!==cid || getLang()!==reportLanguage)return;manageEl("reportResult").innerHTML=renderWeeklyReport(d.report)+`<button class="btn btn-ghost" onclick="genReport(true)">${t("refreshReport")}</button>`;}catch(e){failAt("reportResult",e);}
 }
 async function viewReports(){

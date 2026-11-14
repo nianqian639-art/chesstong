@@ -129,11 +129,13 @@ export const matchRoutes: FastifyPluginAsync = async (app) => {
     const body = analyzeBody.parse(request.body);
     const user = getUserById(requireUserId(request));
     const audience = user?.role === "student" ? "child" : "general";
-    const local = await analyzePgn(body.pgn, audience);
+    const local = await analyzePgn(body.pgn, audience, "w");
     const ai = await generatePgnAnalysis({
       pgn: body.pgn,
       localSummary: local.summary,
       keyMoves: local.keyMoves,
+      movesWithActors: local.movesWithActors,
+      playerColor: "w",
       audience,
       language: requestLanguage(request)
     });

@@ -1,7 +1,8 @@
 // 棋童 App — Complete Application Logic
 let currentView = sessionStorage.getItem("ct.currentView") || "dashboard", ws = null, wsReconnectTimer = null, wsErrorNotified = false, pvpRoomId = sessionStorage.getItem("ct.pvpRoomId") || "", pvpFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", pvpSelected = "", pvpMyColor = "", chatPollTimer = null, gameRequestPollTimer = null;
-let problems = [], currentProblem = null, hintIdx = 0, practiceSelected = "", lastPracticeAnswer = "";
-let practiceBoardFen = "", practiceSolved = false, practiceSubmitting = false, practiceAttempt = 0, explainInProgress = false;
+let problems = [], currentProblem = null, hintIdx = 0, practiceSelected = "", lastPracticeAnswer = "", puzzleFollowupHistory = [], puzzleFollowupInProgress = false;
+let practiceBoardFen = "", practiceSolved = false, practiceSubmitting = false, practiceAttempt = 0, explainInProgress = false, explanationRequestId = 0, explanationAttempt = -1;
+let followupRequestId = 0, followupAttempt = -1;
 let matchId = "", battleFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", battleSelected = "", moves = [];
 let lastBattleEngineMove = null;
 let battleOver = false;
@@ -26,6 +27,7 @@ let speechVoices = [];
 let audioCtx = null;
 let currentTtsAudio = null;
 let speakSession = 0;
+let activeSpeechButton = null, activeSpeechButtonOriginal = "";
 
 const PVP_TIME_CONTROLS = ["1+0", "3+2", "5+3", "10+0", "15+10", "30+10", "120+15"];
 function initPvpTimeControls(){
@@ -281,7 +283,7 @@ function initVoiceSettings() {
           <input id="voicePitch" type="range" min="0.85" max="1.25" step="0.05">
         </div>
         <div class="voice-field" style="flex:0 0 auto;align-self:end;">
-          <button class="btn btn-ghost" type="button" onclick="testVoice()">${t("testVoice")}</button>
+          <button class="btn btn-ghost" type="button" onclick="testVoice(this)">${t("testVoice")}</button>
         </div>
         <div class="voice-field" style="flex:0 0 auto;align-self:end;">
           <button class="btn btn-ghost" type="button" onclick="playUiSound('correct')">${t("testSound")}</button>
@@ -396,7 +398,25 @@ function splitSpeech(text, maxLen = 150) {
   return chunks.length ? chunks : [text];
 }
 
-function speakText(text) {
+function setSpeechButtonBusy(button, busy) {
+  if (!button) return;
+  if (busy) {
+    activeSpeechButton = button;
+    activeSpeechButtonOriginal = button.innerHTML;
+    button.disabled = true;
+    button.setAttribute("aria-busy", "true");
+    button.innerHTML = `<span class="loading-spinner" aria-hidden="true"></span>${esc(aiWaitLabel("voice"))}`;
+    return;
+  }
+  if (button !== activeSpeechButton) return;
+  button.innerHTML = activeSpeechButtonOriginal;
+  button.disabled = false;
+  button.removeAttribute("aria-busy");
+  activeSpeechButton = null;
+  activeSpeechButtonOriginal = "";
+}
+
+function speakText(text, button = null) {
   const content = cleanSpeechText(text);
   if (!content) { toast(t("noSpeechContent")); return; }
   stopSpeech();
@@ -407,6 +427,7 @@ function speakText(text) {
   const lang = getLang();
   const session = speakSession;
   if (lang === "zh" || lang === "en") {
+    setSpeechButtonBusy(button, true);
     speakViaTtsChunked(content, settings.preset || "story", lang, session)
       .catch((err) => {
         if (session !== speakSession) return;
@@ -417,7 +438,8 @@ function speakText(text) {
         // voice uses the selected language and the user's speed/pitch settings.
         // Do not surface provider details in the lesson UI.
         if (speakViaBrowser(content, settings)) toast(t("voiceCloudFallback"));
-      });
+      })
+      .finally(() => setSpeechButtonBusy(button, false));
   } else {
     speakViaBrowser(content, settings);
   }
@@ -475,17 +497,18 @@ function speakViaBrowser(content, settings) {
 function stopSpeech() {
   if ("speechSynthesis" in window) speechSynthesis.cancel();
   if (currentTtsAudio) { currentTtsAudio.pause(); currentTtsAudio = null; }
+  if (activeSpeechButton) setSpeechButtonBusy(activeSpeechButton, false);
   speakSession++; // 使进行中的分段朗读停止
 }
 
 function speakButton(text) {
   const encoded = encodeURIComponent(text || "").replace(/'/g, "%27");
-  return ` <button class="btn btn-ghost speak-btn" onclick="speakText(decodeURIComponent('${encoded}'))">🔊 ${t("speak")}</button><button class="btn btn-ghost speak-btn" onclick="stopSpeech()">${t("stop")}</button>`;
+  return ` <button class="btn btn-ghost speak-btn" onclick="speakText(decodeURIComponent('${encoded}'),this)">🔊 ${t("speak")}</button><button class="btn btn-ghost speak-btn" onclick="stopSpeech()">${t("stop")}</button>`;
 }
 
-function testVoice() {
+function testVoice(button) {
   playUiSound("correct");
-  speakText(t("sampleVoice"));
+  speakText(t("sampleVoice"), button);
 }
 
 function getAudioCtx() {
@@ -754,11 +777,11 @@ async function loadProblems() {
 }
 function practiceUi(key, vars = {}) {
   const copy = {
-    zh: { correct:"✅ 答对了！", wrong:"❌ 不对，再试试！", points:"+{points}分", explain:"🤖 AI讲解", loading:"⌛ AI讲解生成中...", failed:"❌ 讲解生成失败：{message}", explanation:"🤖 AI讲解：", fallback:"思路分步：先找关键子力和威胁。\n关键点：留意将军、吃子和对方王的逃跑格。\n常见误区：只看自己的走法，忘记检查对方的应对。\n类似题建议：再练习几道同主题的题目。" },
-    en: { correct:"✅ Correct!", wrong:"❌ Not quite. Try again!", points:"+{points} pts", explain:"🤖 AI explanation", loading:"⌛ Generating AI explanation...", failed:"❌ Failed to generate explanation: {message}", explanation:"🤖 AI explanation:", fallback:"Approach: identify the important pieces and threats first.\nKey idea: look for checks, captures, and the opponent king's escape squares.\nCommon mistake: do not consider only your move; check the opponent's reply.\nNext practice: solve several more puzzles with this theme." },
-    ja: { correct:"✅ 正解です！", wrong:"❌ もう一度試してみましょう！", points:"+{points}点", explain:"🤖 AI解説", loading:"⌛ AI解説を作成中...", failed:"❌ 解説の作成に失敗しました：{message}", explanation:"🤖 AI解説：", fallback:"考え方：まず重要な駒と脅威を見つけましょう。\nポイント：チェック、駒取り、相手の王の逃げ道を確認します。\nよくあるミス：自分の手だけでなく、相手の応手も確認しましょう。\n次の練習：同じテーマの問題をさらに解いてみましょう。" },
-    fr: { correct:"✅ Correct !", wrong:"❌ Pas encore. Réessayez !", points:"+{points} pts", explain:"🤖 Explication IA", loading:"⌛ Génération de l'explication IA...", failed:"❌ Échec de génération : {message}", explanation:"🤖 Explication IA :", fallback:"Méthode : repérez d'abord les pièces et menaces importantes.\nIdée clé : cherchez les échecs, prises et cases de fuite du roi adverse.\nErreur fréquente : vérifiez aussi la réponse adverse.\nEntraînement : faites plusieurs exercices du même thème." },
-    es: { correct:"✅ ¡Correcto!", wrong:"❌ Aún no. ¡Inténtalo de nuevo!", points:"+{points} pts", explain:"🤖 Explicación IA", loading:"⌛ Generando explicación de IA...", failed:"❌ No se pudo generar la explicación: {message}", explanation:"🤖 Explicación IA:", fallback:"Método: identifica primero las piezas y amenazas importantes.\nIdea clave: busca jaques, capturas y casillas de escape del rey rival.\nError común: comprueba también la respuesta del rival.\nPráctica: resuelve varios ejercicios más del mismo tema." }
+    zh: { correct:"✅ 答对了！", wrong:"❌ 不对，再试试！", points:"+{points}分", reference:"参考答案：{answer}", explain:"🤖 AI 讲解", loading:"⌛ 正在核对棋局...", judging:"正在核对这步走法…", submitFailed:"❌ 未能核对走法：{message}", failed:"❌ 棋局讲解失败：{message}", explanation:"棋局讲解：", ask:"继续问 AI", askPlaceholder:"还想了解这道题的什么？", asking:"AI 正在根据棋盘核对...", fallback:"思路分步：先找关键子力和威胁。\n关键点：留意将军、吃子和对方王的逃跑格。\n常见误区：只看自己的走法，忘记检查对方的应对。\n类似题建议：再练习几道同主题的题目。" },
+    en: { correct:"✅ Correct!", wrong:"❌ Not quite. Try again!", points:"+{points} pts", reference:"Reference answer: {answer}", explain:"🤖 AI explanation", loading:"⌛ Checking the position...", judging:"Checking your move…", submitFailed:"❌ Could not check your move: {message}", failed:"❌ Failed to explain position: {message}", explanation:"Position explanation:", ask:"Ask AI a follow-up", askPlaceholder:"What else would you like to know?", asking:"AI is checking the board...", fallback:"Approach: identify the important pieces and threats first.\nKey idea: look for checks, captures, and the opponent king's escape squares.\nCommon mistake: do not consider only your move; check the opponent's reply.\nNext practice: solve several more puzzles with this theme." },
+    ja: { correct:"✅ 正解です！", wrong:"❌ もう一度試してみましょう！", points:"+{points}点", reference:"正解：{answer}", explain:"🤖 AI解説", loading:"⌛ 局面を確認中...", judging:"着手を確認しています…", submitFailed:"❌ 着手を確認できませんでした：{message}", failed:"❌ 局面の説明に失敗しました：{message}", explanation:"局面の説明：", ask:"AIに追加で質問", askPlaceholder:"この問題について知りたいことは？", asking:"盤面を確認中...", fallback:"考え方：まず重要な駒と脅威を見つけましょう。\nポイント：チェック、駒取り、相手の王の逃げ道を確認します。\nよくあるミス：自分の手だけでなく、相手の応手も確認しましょう。\n次の練習：同じテーマの問題をさらに解いてみましょう。" },
+    fr: { correct:"✅ Correct !", wrong:"❌ Pas encore. Réessayez !", points:"+{points} pts", reference:"Réponse de référence : {answer}", explain:"🤖 Explication IA", loading:"⌛ Vérification de la position...", judging:"Vérification de votre coup…", submitFailed:"❌ Impossible de vérifier votre coup : {message}", failed:"❌ Échec de l'explication : {message}", explanation:"Explication de la position :", ask:"Poser une question à l'IA", askPlaceholder:"Que voulez-vous savoir d'autre ?", asking:"Vérification de l'échiquier...", fallback:"Méthode : repérez d'abord les pièces et menaces importantes.\nIdée clé : cherchez les échecs, prises et cases de fuite du roi adverse.\nErreur fréquente : vérifiez aussi la réponse adverse.\nEntraînement : faites plusieurs exercices du même thème." },
+    es: { correct:"✅ ¡Correcto!", wrong:"❌ Aún no. ¡Inténtalo de nuevo!", points:"+{points} pts", reference:"Respuesta de referencia: {answer}", explain:"🤖 Explicación IA", loading:"⌛ Comprobando la posición...", judging:"Comprobando tu jugada…", submitFailed:"❌ No se pudo comprobar tu jugada: {message}", failed:"❌ No se pudo explicar la posición: {message}", explanation:"Explicación de la posición:", ask:"Preguntar más a la IA", askPlaceholder:"¿Qué más quieres saber?", asking:"Comprobando el tablero...", fallback:"Método: identifica primero las piezas y amenazas importantes.\nIdea clave: busca jaques, capturas y casillas de escape del rey rival.\nError común: comprueba también la respuesta del rival.\nPráctica: resuelve varios ejercicios más del mismo tema." }
   };
   let value = (copy[getLang()] || copy.en)[key] || copy.en[key] || key;
   Object.entries(vars).forEach(([name, valueToInsert]) => { value = value.replaceAll(`{${name}}`, String(valueToInsert)); });
@@ -779,6 +802,40 @@ function explanationMatchesCurrentLanguage(text) {
   if (getLang() === "ja") return /[\u3040-\u30ff]/.test(text);
   return !/[\u3400-\u9fff]/.test(text);
 }
+function aiLoadingMarkup(label) {
+  return `<div role="status" aria-live="polite"><span class="loading-spinner" aria-hidden="true"></span>${esc(label)}</div>`;
+}
+function aiWaitLabel(kind) {
+  const labels={
+    zh:{engine:"Stockfish 正在分析棋局…",suggest:"AI 正在整理建议…",review:"AI 正在复盘棋局…",asking:"AI 正在结合棋盘信息回答…",voice:"正在生成并播放讲解语音…"},
+    en:{engine:"Stockfish is analyzing the position…",suggest:"AI is preparing a suggestion…",review:"AI is reviewing the game…",asking:"AI is checking the board information…",voice:"Generating and playing the explanation audio…"},
+    ja:{engine:"Stockfish が局面を分析しています…",suggest:"AI がアドバイスを準備しています…",review:"AI が棋譜を振り返っています…",asking:"AI が盤面情報を確認しています…",voice:"説明音声を生成して再生しています…"},
+    fr:{engine:"Stockfish analyse la position…",suggest:"L’IA prépare un conseil…",review:"L’IA analyse la partie…",asking:"L’IA vérifie les informations de l’échiquier…",voice:"Génération et lecture de l’explication audio…"},
+    es:{engine:"Stockfish está analizando la posición…",suggest:"La IA prepara una sugerencia…",review:"La IA revisa la partida…",asking:"La IA comprueba la información del tablero…",voice:"Generando y reproduciendo el audio de la explicación…"}
+  };
+  labels.zh.explain="AI 正在核对题目并生成讲解…";
+  labels.en.explain="AI is checking the puzzle and preparing an explanation…";
+  labels.ja.explain="AI が問題を確認し、説明を作成しています…";
+  labels.fr.explain="L’IA vérifie le problème et prépare une explication…";
+  labels.es.explain="La IA comprueba el problema y prepara una explicación…";
+  return (labels[getLang()]||labels.en)[kind];
+}
+function engineFeedbackMarkup(move) {
+  const label={zh:"Stockfish 最佳着法：",en:"Stockfish best move: ",ja:"Stockfish の最善手：",fr:"Meilleur coup Stockfish : ",es:"Mejor jugada de Stockfish: "};
+  const unavailable={zh:"Stockfish 暂未返回着法",en:"Stockfish did not return a move",ja:"Stockfish から手が返されませんでした",fr:"Stockfish n’a pas renvoyé de coup",es:"Stockfish no devolvió ninguna jugada"};
+  const lang=getLang();
+  return `<small class="engine-feedback">${esc(move&&move!=="unavailable"?label[lang]:unavailable[lang]||unavailable.en)}${move&&move!=="unavailable"?`<b>${esc(move)}</b>`:""}</small>`;
+}
+function aiSourceLabel(source) {
+  const labels={
+    zh:{qwen:"千问生成",ollama:"本地模型生成",verified:"服务端核验讲解"},
+    en:{qwen:"Generated by Qwen",ollama:"Generated by local model",verified:"Verified server explanation"},
+    ja:{qwen:"Qwen による説明",ollama:"ローカルモデルによる説明",verified:"サーバー検証済みの説明"},
+    fr:{qwen:"Généré par Qwen",ollama:"Généré par le modèle local",verified:"Explication vérifiée par le serveur"},
+    es:{qwen:"Generado por Qwen",ollama:"Generado por el modelo local",verified:"Explicación verificada por el servidor"}
+  };
+  return (labels[getLang()]||labels.en)[source]||labels.en.verified;
+}
 function renderProbList() {
   document.getElementById("problemList").innerHTML = problems.map((p,i) => `<div class="list-item" style="cursor:pointer;${currentProblem&&currentProblem.id===p.id?'background:rgba(255,255,255,.1);':''}" onclick="selectProblem(${i})">${String(i+1).padStart(2,"0")}·${p.knowledgePoint}·★${p.difficulty}</div>`).join("");
 }
@@ -788,6 +845,7 @@ function resetPracticePosition(problem = currentProblem) {
   practiceSelected="";
   practiceSolved=false;
   practiceSubmitting=false;
+  puzzleFollowupHistory=[];
 }
 function selectProblem(i) { currentProblem=problems[i]; hintIdx=0; resetPracticePosition(); document.getElementById("practiceResult").innerHTML=""; renderProblem(); renderProbList(); }
 function previewPracticeMove(fen, moveStr) {
@@ -857,21 +915,23 @@ function showHint() { if(currentProblem&&currentProblem.hints) toast("💡 "+cur
 function nextProblem() { if(problems.length){ const i=problems.indexOf(currentProblem); currentProblem=problems[(i+1)%problems.length]; hintIdx=0; resetPracticePosition(); document.getElementById("practiceResult").innerHTML=""; renderProblem(); renderProbList(); } }
 
 async function submitPracticeMove(moveStr) {
-  if(!currentProblem||practiceSolved||practiceSubmitting) return;
+  if(!currentProblem||practiceSolved||practiceSubmitting) return false;
   const problem=currentProblem, attempt=++practiceAttempt;
   practiceSubmitting=true;
   practiceSelected="";
   practiceBoardFen=previewPracticeMove(problem.fen,moveStr);
+  document.getElementById("practiceResult").innerHTML=aiLoadingMarkup(practiceUi("judging"));
   renderProblem();
   lastPracticeAnswer = moveStr;
   try {
     const d = await API.req("/problems/submit","POST",{problemId:problem.id,answer:moveStr});
-    if (attempt!==practiceAttempt||currentProblem!==problem) return;
+    if (attempt!==practiceAttempt||currentProblem!==problem) return false;
     practiceSolved=Boolean(d.isCorrect);
     if (!practiceSolved) practiceBoardFen=problem.fen;
     practiceSubmitting=false;
     var hdr = d.isCorrect ? practiceUi("correct")+(d.awardedPoints>0?" "+practiceUi("points", { points:d.awardedPoints }):"") : practiceUi("wrong");
-    document.getElementById("practiceResult").innerHTML = '<span data-answer-header>'+hdr+'</span> <button data-explain-button class="btn btn-ghost" onclick="explainAnswer()" style="font-size:11px;padding:2px 8px;">'+practiceUi("explain")+'</button>';
+    const referenceAnswer=d.correctAnswer?`<small class="puzzle-reference-answer">${practiceUi("reference",{answer:esc(d.correctAnswer)})}</small>`:"";
+    document.getElementById("practiceResult").innerHTML = '<span data-answer-header>'+hdr+'</span> '+referenceAnswer+' <button data-explain-button class="btn btn-ghost" onclick="explainAnswer()" style="font-size:11px;padding:2px 8px;">'+practiceUi("explain")+'</button>';
     renderProblem();
     playUiSound(d.isCorrect ? "correct" : "wrong");
     if(!window.ctTrialMode && d.awardedPoints>0){
@@ -884,42 +944,68 @@ async function submitPracticeMove(moveStr) {
         toast("🎉 升级到 " + newRank.title + "！");
       }
     }
-  } catch(e) { if(attempt===practiceAttempt&&currentProblem===problem){practiceBoardFen=problem.fen;practiceSubmitting=false;practiceSolved=false;renderProblem();toast(e.message);} }
+    void explainAnswer();
+    return true;
+  } catch(e) { if(attempt===practiceAttempt&&currentProblem===problem){practiceBoardFen=problem.fen;practiceSubmitting=false;practiceSolved=false;document.getElementById("practiceResult").textContent=practiceUi("submitFailed",{message:e.message});renderProblem();toast(e.message);}return false; }
 }
 
 async function submitPractice() {
-  var a = document.getElementById("practiceAnswer").value.trim();
+  const input=document.getElementById("practiceAnswer");
+  var a = input.value.trim();
   if(!a){ toast("输入走法或点击棋盘走棋"); return; }
-  submitPracticeMove(a);
-  document.getElementById("practiceAnswer").value="";
+  if(await submitPracticeMove(a)&&input.value.trim()===a)input.value="";
 }
 
 async function explainAnswer() {
   if(!currentProblem){ toast("没有题目"); return; }
-  if(explainInProgress)return;
+  const problem=currentProblem, attempt=practiceAttempt;
+  if(explainInProgress&&explanationAttempt===attempt)return;
+  const requestId=++explanationRequestId;
+  explanationAttempt=attempt;
   explainInProgress=true;
-  const problem=currentProblem;
   const button=document.querySelector('#practiceResult [data-explain-button]');
   if(button){button.disabled=true;button.setAttribute("aria-busy","true");}
   const resultEl=document.getElementById("practiceResult");
   let feedback=document.getElementById("explanationFeedback");
   if(!feedback){feedback=document.createElement("div");feedback.id="explanationFeedback";feedback.className="explanation-feedback";feedback.setAttribute("role","status");feedback.setAttribute("aria-live","polite");resultEl.appendChild(feedback);}
-  feedback.innerHTML=`<span class="loading-spinner" aria-hidden="true"></span><span>${practiceUi("loading")}</span>`;
+  feedback.innerHTML=aiLoadingMarkup(aiWaitLabel("explain"));
   try {
-    const e = await API.req("/problems/explain","POST",{problemId:problem.id,answer:lastPracticeAnswer||problem.solution,isCorrect:true,language:getLang()});
-    if(currentProblem!==problem)return;
+    const e = await API.req("/problems/explain","POST",{problemId:problem.id,answer:lastPracticeAnswer||problem.solution,language:getLang()});
+    if(currentProblem!==problem||attempt!==practiceAttempt||requestId!==explanationRequestId)return;
     const rawText = explanationMatchesCurrentLanguage(e.explanation || "") ? (e.explanation || "") : practiceUi("fallback");
     const text = cleanLearnerExplanation(rawText);
+    puzzleFollowupHistory=[];
     feedback.className="explanation-feedback explanation-success";
-    feedback.innerHTML=`<b>${practiceUi("explanation")}</b>${speakButton(text)}${learnerExplanationHtml(text)}`;
+    feedback.innerHTML=`<b>${practiceUi("explanation")}</b> <small class="ai-source">${aiSourceLabel(e.source)}</small>${speakButton(text)}${learnerExplanationHtml(text)}${engineFeedbackMarkup(e.engineFeedback)}`;
+    const followup=document.createElement("div");followup.className="puzzle-followup";followup.innerHTML=`<input id="puzzleFollowupQuestion" maxlength="500" placeholder="${practiceUi("askPlaceholder")}"><button class="btn btn-ghost" onclick="askPuzzleFollowup()">${practiceUi("ask")}</button><div id="puzzleFollowupAnswers" aria-live="polite"></div>`;feedback.appendChild(followup);
   } catch(ex){
-    if(currentProblem!==problem)return;
+    if(currentProblem!==problem||attempt!==practiceAttempt||requestId!==explanationRequestId)return;
     feedback.className="explanation-feedback explanation-error";
     feedback.textContent=practiceUi("failed", { message:ex.message });
   } finally {
-    explainInProgress=false;
-    if(button){button.disabled=false;button.removeAttribute("aria-busy");}
+    if(requestId===explanationRequestId){explainInProgress=false;if(button){button.disabled=false;button.removeAttribute("aria-busy");}}
   }
+}
+
+async function askPuzzleFollowup() {
+  const input=document.getElementById("puzzleFollowupQuestion"), target=document.getElementById("puzzleFollowupAnswers");
+  const question=(input?.value||"").trim();
+  if(!currentProblem||!question||!target||(puzzleFollowupInProgress&&followupAttempt===practiceAttempt))return;
+  const problem=currentProblem;
+  const attempt=practiceAttempt, requestId=++followupRequestId;
+  followupAttempt=attempt;
+  const button=input.parentElement?.querySelector("button");
+  puzzleFollowupInProgress=true;
+  if(button){button.disabled=true;button.setAttribute("aria-busy","true");}
+  target.innerHTML=aiLoadingMarkup(aiWaitLabel("asking"));
+  try {
+    const response=await API.req("/problems/ask","POST",{problemId:problem.id,answer:lastPracticeAnswer||problem.solution,question,history:puzzleFollowupHistory.slice(-6),language:getLang()});
+    if(currentProblem!==problem||attempt!==practiceAttempt||requestId!==followupRequestId)return;
+    puzzleFollowupHistory.push({role:"user",content:question},{role:"assistant",content:response.answer||""});
+    target.textContent=puzzleFollowupHistory.map(turn=>(turn.role==="user"?"Q: ":"A: ")+turn.content).join("\n\n")+`\n\n${aiSourceLabel(response.source)}`;
+    input.value="";
+  } catch(error) { if(currentProblem===problem&&attempt===practiceAttempt&&requestId===followupRequestId)target.textContent=practiceUi("failed",{message:error.message}); }
+  finally { if(requestId===followupRequestId){puzzleFollowupInProgress=false;if(button){button.disabled=false;button.removeAttribute("aria-busy");}} }
 }
 
 // ── AI Battle ──
@@ -1013,6 +1099,7 @@ function renderBattle() {
 }
 async function submitBattleMoveStr(moveStr) {
   try {
+    document.getElementById("battleStatus").innerHTML=aiLoadingMarkup(aiWaitLabel("engine"));
     var level = getBattleDifficultyLevel();
     var payload = {matchId, fen:battleFen, move:moveStr, difficulty: level.difficulty, previousEngineMove: lastBattleEngineMove};
     if(battleVariant&&battleVariant!=="standard") payload.variant=battleVariant;
@@ -1050,6 +1137,8 @@ async function submitBattleMove() {
   submitBattleMoveStr(m);
 }
 async function suggestMove() {
+  const target=document.getElementById("analysisResult");
+  target.innerHTML=aiLoadingMarkup(aiWaitLabel("suggest"));
   try {
     const level = getBattleDifficultyLevel();
     const d = await API.req("/match/suggest","POST",{fen:battleFen,difficulty:level.difficulty});
@@ -1060,9 +1149,11 @@ async function suggestMove() {
       `${t("trainingTier")}：${esc(battleLevelLabel(level))}<br>` +
       `${t("engineSource")}：${esc(d.source||"fallback")}<br>` +
       `${learnerExplanationHtml(reason)}`;
-  } catch(e){ toast(e.message); }
+  } catch(e){ target.textContent=e.message; toast(e.message); }
 }
 async function analyzeGame() {
+  const target=document.getElementById("analysisResult");
+  target.innerHTML=aiLoadingMarkup(aiWaitLabel("review"));
   try {
     const d = await API.req("/match/analyze","POST",{pgn:moves.join(" ")||""});
     const key = (d.keyMoves||[]).map(m=>t("moveNumber", { number: m.ply, move: m.san })).join(", ") || t("noKeyMoves");
@@ -1071,7 +1162,7 @@ async function analyzeGame() {
     document.getElementById("analysisResult").innerHTML =
       `${t("reviewTitle")}：${learnerExplanationHtml(summary)}${speakButton(text)}<br>` +
       `${t("keyMoves")}：${esc(key)}`;
-  } catch(e){ toast(e.message); }
+  } catch(e){ target.textContent=e.message; toast(e.message); }
 }
 
 // ── PvP ──
@@ -1379,7 +1470,7 @@ async function showChildDetail(cid){
 }
 async function genReport(force){
   const cid=document.getElementById("reportChildSelect").value; if(!cid){ toast("选择孩子"); return; }
-  document.getElementById("reportResult").innerHTML="<div class='feed'>⏳ 生成中...</div>";
+  document.getElementById("reportResult").innerHTML=aiLoadingMarkup("AI 正在整理本周数据并生成评语…");
   var url="/parent/child/"+cid+"/generate-report";
   if(force) url+="?force=true";
   try{ const d=await API.req(url,"POST",{}); const r=d.report;

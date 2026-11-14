@@ -362,6 +362,18 @@ const requestEngineMove = async (fen: string, difficulty: number, context: WeakM
   };
 };
 
+export const analyzePuzzleMove = async (fen: string): Promise<EngineMoveResult> => {
+  try {
+    const chess = new Chess(fen);
+    const result = await requestEngineMove(fen, 20);
+    if (!result.move) return result;
+    const move = chess.move(result.move, { strict: false });
+    return move ? { move: move.san, source: result.source } : { move: null, source: "fallback" };
+  } catch {
+    return { move: null, source: "fallback" };
+  }
+};
+
 export const playMove = async (input: MoveInput): Promise<{
   playerMoveAccepted: boolean;
   playerMove: string | null;
@@ -458,13 +470,14 @@ export const suggestMove = async (input: SuggestInput): Promise<{
 
 export const analyzePgn = async (
   pgn: string,
-  audience: "child" | "general" = "general"
-): Promise<{ summary: string; keyMoves: Array<{ ply: number; san: string; tag: string }> }> => {
+  audience: "child" | "general" = "general",
+  playerColor: "w" | "b" = "w"
+): Promise<{ summary: string; keyMoves: Array<{ ply: number; san: string; tag: string }>; movesWithActors: Array<{ ply: number; san: string; side: "White" | "Black"; actor: "player" | "AI" }> }> => {
   const trimmed = pgn.trim();
   if (!trimmed) {
     return {
       summary: "暂无对局数据可复盘。",
-      keyMoves: []
+      keyMoves: [], movesWithActors: []
     };
   }
 
@@ -474,11 +487,15 @@ export const analyzePgn = async (
   } catch {
     return {
       summary: "PGN 格式解析失败，请检查走法记录。",
-      keyMoves: []
+      keyMoves: [], movesWithActors: []
     };
   }
 
   const history = chess.history({ verbose: true });
+  const movesWithActors = history.map((move, index) => {
+    const side = index % 2 === 0 ? "w" : "b";
+    return { ply: index + 1, san: move.san, side: side === "w" ? "White" as const : "Black" as const, actor: side === playerColor ? "player" as const : "AI" as const };
+  });
   const keyMoves = history
     .map((move, index) => {
       let tag = "";
@@ -498,6 +515,8 @@ export const analyzePgn = async (
 
   const captureCount = history.filter((h) => Boolean(h.captured)).length;
   const checkCount = history.filter((h) => h.san.includes("+") || h.san.includes("#")).length;
+  const playerName = playerColor === "w" ? "White" : "Black";
+  const engineName = playerColor === "w" ? "Black" : "White";
   const summary = [
     audience === "child" ? "这盘棋大概是这样：" : "复盘结论：",
     audience === "child"
@@ -505,8 +524,8 @@ export const analyzePgn = async (
       : `全局共 ${history.length} 手，战术交换（吃子）${captureCount} 次，形成将军/将杀威胁 ${checkCount} 次。`,
     audience === "child"
       ? "下次先看王安不安全，再找能吃子的小机会。"
-      : "建议优先检查关键着法前后的王安全、子力协调和中心控制。"
+      : "建议优先检查关键着法前后的王安全、子力协调和中心控制。",
   ].join("");
 
-  return { summary, keyMoves };
+  return { summary, keyMoves, movesWithActors };
 };
